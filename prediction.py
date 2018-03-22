@@ -1,25 +1,159 @@
-f = open('TrainData_2015.1.1_2015.2.19.txt')
-data = f.readlines()
+#!/usr/bin/env python
+# *coding=utf8
+from datetime import date, timedelta
 
-dataMatrix = []
-for d in data:
-    dataMatrix.append(d.split('\t'))
+import matplotlib.pyplot as plt
 
-startDate = dataMatrix[0][2].split(' ')[0]
-endDate = dataMatrix[len(dataMatrix) - 1][2].split(' ')[0]
 
-print dataMatrix
-flavorName = []
-flavorNameTemp = []
-flavorID = []
+def str_to_date(str):
+    """将字符串转换为标准日期
+    example: '2015-02-20'->2015-02-20
+    :param str:
+    :return: Date格式日期
+    """
+    str_array = str.split('-')
+    return date(int(str_array[0]), int(str_array[1]), int(str_array[2]))
 
-for d in dataMatrix:
-    if (d[1] not in flavorNameTemp):
-        flavorNameTemp.append(d[1])
-        flavorID.append(int(d[1][6:]))
 
-flavorID.sort()
-for i in flavorID:
-    for fname in flavorNameTemp:
-        if int(fname[6:]) == i:
-            flavorName.append(fname)
+def segmentation(flavor, fn, fnd, d, psd):
+    """tongji
+
+    :param flavor: flavor名称
+    :param fn: flavor_name序列
+    :param fnd: flavor_name_datetime序列
+    :param d: delta切分时间段
+    :param psd: prediction_start_date预测开始日期
+    :return: [x_axis, y_axis]
+    """
+    x_axis = []  # 时间段
+    y_axis = []  # 每个时间段flavor请求数量
+    index = fn.index(flavor)
+    datetime_list = fnd[index]  # 该flavor的所有日期数据
+    # print datetime_list
+    # print len(datetime_list)
+    first_date = str_to_date(datetime_list[0].split(' ')[0])  # 原数据中该flavor最早的日期
+    start_count_date = psd  # 统计时flavor开始的日期
+    # print psd
+    while start_count_date > first_date:
+        start_count_date -= timedelta(d)
+        x_axis.append(
+            start_count_date.strftime("%Y-%m-%d") + " to " + (start_count_date + timedelta(d - 1)).strftime("%Y-%m-%d"))
+    start_count_date += timedelta(d)
+    x_axis.reverse()
+    del x_axis[0]
+    # print start_count_date
+    # print x_axis
+
+    left_date = start_count_date
+    right_date = left_date + timedelta(d)
+
+    # todo:统计每个时间段flavor的请求数量应该有更快的算法
+    while right_date <= psd:
+        count = 0
+        for dl in datetime_list:
+            current_date = str_to_date(dl.split(' ')[0])
+            if left_date <= current_date < right_date:
+                count = count + 1
+        y_axis.append(count)
+        left_date = right_date
+        right_date = left_date + timedelta(d)
+
+    result = [x_axis, y_axis]
+    return result
+
+
+#################################
+# 处理input.txt文件
+f_input = open("input_5flavors_cpu_7days.txt")
+input_data = f_input.readlines()
+f_input.close()
+
+flavor_selected = []  # input.txt中需要预测的flavor
+for id in input_data:
+    if id[:6] == "flavor":
+        flavor_selected.append(id.split(' ')[0])
+
+prediction_start = input_data[-2:-1][0].split(' ')[0]
+prediction_start_date = str_to_date(prediction_start)
+prediction_end = input_data[-1:][0].split(' ')[0]
+prediction_end_date = str_to_date(prediction_end)
+prediction_delta = (prediction_end_date - prediction_start_date).days  # 预测时间段的天数
+
+operator = {7: 7, 14: 7}
+DELTA = operator[prediction_delta]  # 切分统计的时间段
+#################################
+
+
+# f_train = open("TrainData_2015.1.1_2015.2.19.txt")
+f_train = open("TrainData.txt")
+train_data = f_train.readlines()
+f_train.close()
+
+data_matrix = []
+for d in train_data:
+    data_matrix.append(d.split('\t'))
+
+start_date = data_matrix[0][2].split(' ')[0]
+end_date = data_matrix[len(data_matrix) - 1][2].split(' ')[0]
+
+# print data_matrix
+flavor_name = []  # ['flavor1', 'flavor2', 'flavor3', 'flavor4', 'flavor5', ...]
+flavor_name_temp = []
+flavor_id = []
+
+#################################
+# 提取flavor name
+for dm in data_matrix:
+    if dm[1] not in flavor_name_temp:
+        flavor_name_temp.append(dm[1])
+        flavor_id.append(int(dm[1][6:]))
+
+flavor_id.sort()
+for fi in flavor_id:
+    for fnt in flavor_name_temp:
+        if int(fnt[6:]) == fi:
+            flavor_name.append(fnt)
+
+# print flavor_name
+#################################
+
+
+#################################
+# 提取flavor对应的所有时间点
+flavor_name_datetime = []
+for fn in flavor_name:
+    fnd_item = []
+    for dm in data_matrix:
+        if dm[1] == fn:
+            fnd_item.append(dm[2])
+    flavor_name_datetime.append(fnd_item)
+
+# print flavor_name_datetime
+#################################
+
+period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
+final_period = []
+max_period_length = 0
+for fs in flavor_selected:
+    pd_temp = segmentation(fs, flavor_name, flavor_name_datetime, DELTA, prediction_start_date)
+    if len(pd_temp[0]) >= max_period_length:
+        max_period_length = len(pd_temp[0])
+        final_period = pd_temp[0]
+    period_data.append(pd_temp)
+
+for pd in period_data:
+    difference = max_period_length - len(pd[0])
+    if difference > 0:
+        complement = [0] * difference
+        pd[0] = final_period
+        pd[1] = complement + pd[1]
+
+for ps in flavor_selected:
+    print period_data[flavor_selected.index(ps)][1]
+    plt.plot(period_data[flavor_selected.index(ps)][1], label=ps)
+
+plt.legend(loc='upper left')
+plt.show()
+# plt.plot(segmentation("flavor1", flavor_name, flavor_name_datetime, DELTA, prediction_start_date),'red')
+# plt.plot(segmentation("flavor2", flavor_name, flavor_name_datetime, DELTA, prediction_start_date),'blue')
+# plt.show()

@@ -83,7 +83,8 @@ operator = {7: 7, 14: 7}
 DELTA = operator[prediction_delta]  # 切分统计的时间段
 #################################
 
-
+#################################
+# 处理TrainData.txt文件
 # f_train = open("TrainData_2015.1.1_2015.2.19.txt")
 f_train = open("TrainData.txt")
 train_data = f_train.readlines()
@@ -95,14 +96,14 @@ for d in train_data:
 
 start_date = data_matrix[0][2].split(' ')[0]
 end_date = data_matrix[len(data_matrix) - 1][2].split(' ')[0]
+#################################
 
-# print data_matrix
-flavor_name = []  # ['flavor1', 'flavor2', 'flavor3', 'flavor4', 'flavor5', ...]
-flavor_name_temp = []
-flavor_id = []
 
 #################################
 # 提取flavor name
+flavor_name = []  # ['flavor1', 'flavor2', 'flavor3', 'flavor4', 'flavor5', ...]
+flavor_name_temp = []
+flavor_id = []
 for dm in data_matrix:
     if dm[1] not in flavor_name_temp:
         flavor_name_temp.append(dm[1])
@@ -150,10 +151,8 @@ for pd in period_data:
 
 for ps in flavor_selected:
     print period_data[flavor_selected.index(ps)][1]
-    plt.plot(period_data[flavor_selected.index(ps)][1], label=ps)
+    plt.plot(period_data[flavor_selected.index(ps)][1], label=ps, linestyle="-")
+
 
 plt.legend(loc='upper left')
 plt.show()
-# plt.plot(segmentation("flavor1", flavor_name, flavor_name_datetime, DELTA, prediction_start_date),'red')
-# plt.plot(segmentation("flavor2", flavor_name, flavor_name_datetime, DELTA, prediction_start_date),'blue')
-# plt.show()

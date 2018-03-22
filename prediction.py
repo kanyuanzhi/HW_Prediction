@@ -15,7 +15,7 @@ def str_to_date(str):
     return date(int(str_array[0]), int(str_array[1]), int(str_array[2]))
 
 
-def segmentation(flavor, fn, fnd, d, psd):
+def segmentation(flavor, fn, fnd, d, psd, sd):
     """tongji
 
     :param flavor: flavor名称
@@ -23,6 +23,7 @@ def segmentation(flavor, fn, fnd, d, psd):
     :param fnd: flavor_name_datetime序列
     :param d: delta切分时间段
     :param psd: prediction_start_date预测开始日期
+    :param sd: start_date训练数据集中最早日期
     :return: [x_axis, y_axis]
     """
     x_axis = []  # 时间段
@@ -33,8 +34,9 @@ def segmentation(flavor, fn, fnd, d, psd):
     # print len(datetime_list)
     first_date = str_to_date(datetime_list[0].split(' ')[0])  # 原数据中该flavor最早的日期
     start_count_date = psd  # 统计时flavor开始的日期
+    print first_date
     # print psd
-    while start_count_date > first_date:
+    while start_count_date > sd:
         start_count_date -= timedelta(d)
         x_axis.append(
             start_count_date.strftime("%Y-%m-%d") + " to " + (start_count_date + timedelta(d - 1)).strftime("%Y-%m-%d"))
@@ -94,8 +96,8 @@ data_matrix = []
 for d in train_data:
     data_matrix.append(d.split('\t'))
 
-start_date = data_matrix[0][2].split(' ')[0]
-end_date = data_matrix[len(data_matrix) - 1][2].split(' ')[0]
+start_date = str_to_date(data_matrix[0][2].split(' ')[0])
+end_date = str_to_date(data_matrix[len(data_matrix) - 1][2].split(' ')[0])
 #################################
 
 
@@ -136,23 +138,12 @@ period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
 final_period = []
 max_period_length = 0
 for fs in flavor_selected:
-    pd_temp = segmentation(fs, flavor_name, flavor_name_datetime, DELTA, prediction_start_date)
-    if len(pd_temp[0]) >= max_period_length:
-        max_period_length = len(pd_temp[0])
-        final_period = pd_temp[0]
-    period_data.append(pd_temp)
-
-for pd in period_data:
-    difference = max_period_length - len(pd[0])
-    if difference > 0:
-        complement = [0] * difference
-        pd[0] = final_period
-        pd[1] = complement + pd[1]
+    period_data.append(segmentation(fs, flavor_name, flavor_name_datetime, DELTA, prediction_start_date, start_date))
 
 for ps in flavor_selected:
+    print period_data[flavor_selected.index(ps)][0]
     print period_data[flavor_selected.index(ps)][1]
     plt.plot(period_data[flavor_selected.index(ps)][1], label=ps, linestyle="-")
-
 
 plt.legend(loc='upper left')
 plt.show()

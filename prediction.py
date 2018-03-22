@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 # *coding=utf8
 from datetime import date, timedelta
+from readtxt import InputTxtProcess, DataTrainTxtProcess
 
 import matplotlib.pyplot as plt
 
@@ -66,73 +66,80 @@ def segmentation(flavor, fn, fnd, d, psd, sd):
 
 #################################
 # 处理input.txt文件
-f_input = open("input_5flavors_cpu_7days.txt")
-input_data = f_input.readlines()
-f_input.close()
-
-flavor_selected = []  # input.txt中需要预测的flavor
-for id in input_data:
-    if id[:6] == "flavor":
-        flavor_selected.append(id.split(' ')[0])
-
-prediction_start = input_data[-2:-1][0].split(' ')[0]
-prediction_start_date = str_to_date(prediction_start)
-prediction_end = input_data[-1:][0].split(' ')[0]
-prediction_end_date = str_to_date(prediction_end)
-prediction_delta = (prediction_end_date - prediction_start_date).days  # 预测时间段的天数
-
-operator = {7: 7, 14: 7}
-DELTA = operator[prediction_delta]  # 切分统计的时间段
+# f_input = open("input_5flavors_cpu_7days.txt")
+# input_data = f_input.readlines()
+# f_input.close()
+#
+# flavor_selected = []  # input.txt中需要预测的flavor
+# for id in input_data:
+#     if id[:6] == "flavor":
+#         flavor_selected.append(id.split(' ')[0])
+#
+# prediction_start = input_data[-2:-1][0].split(' ')[0]
+# prediction_start_date = str_to_date(prediction_start)
+# prediction_end = input_data[-1:][0].split(' ')[0]
+# prediction_end_date = str_to_date(prediction_end)
+# prediction_delta = (prediction_end_date - prediction_start_date).days  # 预测时间段的天数
+#
+# operator = {7: 7, 14: 7}
+# DELTA = operator[prediction_delta]  # 切分统计的时间段
 #################################
+DELTA = InputTxtProcess().delta()  # 预测时间段的天数
+flavor_selected = InputTxtProcess().flavor_selected()  # input.txt中需要预测的flavor
+prediction_start_date = InputTxtProcess().prediction_start_date()
 
-#################################
-# 处理TrainData.txt文件
-# f_train = open("TrainData_2015.1.1_2015.2.19.txt")
-f_train = open("TrainData.txt")
-train_data = f_train.readlines()
-f_train.close()
+# #################################
+# # 处理TrainData.txt文件
+# # f_train = open("TrainData_2015.1.1_2015.2.19.txt")
+# f_train = open("TrainData.txt")
+# train_data = f_train.readlines()
+# f_train.close()
+#
+# data_matrix = []
+# for d in train_data:
+#     data_matrix.append(d.split('\t'))
+#
+# start_date = str_to_date(data_matrix[0][2].split(' ')[0])
+# end_date = str_to_date(data_matrix[len(data_matrix) - 1][2].split(' ')[0])
+# #################################
+#
+#
+# #################################
+# # 提取flavor name
+# flavor_name = []  # ['flavor1', 'flavor2', 'flavor3', 'flavor4', 'flavor5', ...]
+# flavor_name_temp = []
+# flavor_id = []
+# for dm in data_matrix:
+#     if dm[1] not in flavor_name_temp:
+#         flavor_name_temp.append(dm[1])
+#         flavor_id.append(int(dm[1][6:]))
+#
+# flavor_id.sort()
+# for fi in flavor_id:
+#     for fnt in flavor_name_temp:
+#         if int(fnt[6:]) == fi:
+#             flavor_name.append(fnt)
+#
+# # print flavor_name
+# #################################
+#
+#
+# #################################
+# # 提取flavor对应的所有时间点
+# flavor_name_datetime = []
+# for fn in flavor_name:
+#     fnd_item = []
+#     for dm in data_matrix:
+#         if dm[1] == fn:
+#             fnd_item.append(dm[2])
+#     flavor_name_datetime.append(fnd_item)
+#
+# # print flavor_name_datetime
+# #################################
 
-data_matrix = []
-for d in train_data:
-    data_matrix.append(d.split('\t'))
-
-start_date = str_to_date(data_matrix[0][2].split(' ')[0])
-end_date = str_to_date(data_matrix[len(data_matrix) - 1][2].split(' ')[0])
-#################################
-
-
-#################################
-# 提取flavor name
-flavor_name = []  # ['flavor1', 'flavor2', 'flavor3', 'flavor4', 'flavor5', ...]
-flavor_name_temp = []
-flavor_id = []
-for dm in data_matrix:
-    if dm[1] not in flavor_name_temp:
-        flavor_name_temp.append(dm[1])
-        flavor_id.append(int(dm[1][6:]))
-
-flavor_id.sort()
-for fi in flavor_id:
-    for fnt in flavor_name_temp:
-        if int(fnt[6:]) == fi:
-            flavor_name.append(fnt)
-
-# print flavor_name
-#################################
-
-
-#################################
-# 提取flavor对应的所有时间点
-flavor_name_datetime = []
-for fn in flavor_name:
-    fnd_item = []
-    for dm in data_matrix:
-        if dm[1] == fn:
-            fnd_item.append(dm[2])
-    flavor_name_datetime.append(fnd_item)
-
-# print flavor_name_datetime
-#################################
+start_date = DataTrainTxtProcess().start_date()
+flavor_name = DataTrainTxtProcess().flavor_name()
+flavor_name_datetime = DataTrainTxtProcess().flavor_name_datetime(flavor_name)
 
 period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
 final_period = []

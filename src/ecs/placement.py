@@ -3,7 +3,7 @@ from readtxt import InputTxtProcess
 from writetxt import generate_output
 
 
-def placement(input_lines,flavor_prediction_numbers):
+def placement(input_lines, flavor_prediction_numbers):
     itp = InputTxtProcess(input_lines)
     resource_name = itp.resource_name()
     physical_server_specification = itp.physical_server_specification()
@@ -24,16 +24,16 @@ def placement(input_lines,flavor_prediction_numbers):
     CPU_dict = dict(zip(flavor_name, flavor_CPU))
     MEM_dict = dict(zip(flavor_name, flavor_MEM))
 
-    #flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
+    # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 
     flavor_queue = []
     flavor_total = 0  # flavor总数
-    for i,fn in enumerate(flavor_prediction_numbers):
+    for i, fn in enumerate(flavor_prediction_numbers):
         flavor_total += fn
         current_flavor_name = flavor_name[i]
         flavor_queue += [current_flavor_name] * fn
-    # print flavor_name
-    # print flavor_queue
+    print flavor_name
+    print flavor_queue
 
     physical_server_cluster = []
     physical_server = {}
@@ -50,11 +50,12 @@ def placement(input_lines,flavor_prediction_numbers):
         else:
             physical_server_cluster.append(physical_server)
             physical_server = {}
-            residual_CPU = physical_server_CPU
-            residual_MEM = physical_server_MEM
+            physical_server[fq] = 1
+            residual_CPU = physical_server_CPU - CPU_dict[fq]
+            residual_MEM = physical_server_MEM - MEM_dict[fq]
     physical_server_cluster.append(physical_server)
-    # print physical_server_cluster
-    # print flavor_prediction_numbers
+    print physical_server_cluster
+    print flavor_prediction_numbers
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)
 

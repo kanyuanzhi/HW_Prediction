@@ -8,7 +8,7 @@ from data_process import data_process
 def __average(prediction_numbers):
     sum = 0
     for pn in prediction_numbers:
-        sum += pn
+        sum = sum + pn
     return int(sum / len(prediction_numbers))
 
 

@@ -26,10 +26,10 @@ def __segmentation(flavor, fn, fnd, d, psd, sd):
     # print first_date
     # print psd
     while start_count_date > sd:
-        start_count_date -= timedelta(d)
+        start_count_date = start_count_date - timedelta(d)
         x_axis.append(
             start_count_date.strftime("%Y-%m-%d") + " to " + (start_count_date + timedelta(d - 1)).strftime("%Y-%m-%d"))
-    start_count_date += timedelta(d)
+    start_count_date = start_count_date + timedelta(d)
     x_axis.reverse()
     del x_axis[0]
     # print start_count_date

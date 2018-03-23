@@ -2,7 +2,7 @@
 def generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster):
     flavor_total = 0  # flavor总数
     for fn in flavor_prediction_numbers:
-        flavor_total += fn
+        flavor_total = flavor_total + fn
     output_str = [str(flavor_total)]
 
     for fn in flavor_name:
@@ -17,7 +17,7 @@ def generate_output(flavor_name, flavor_prediction_numbers, physical_server_clus
         psc_str = str(physical_server_cluster.index(psc) + 1)
         physical_server = psc.items()
         for ps in physical_server:
-            psc_str += ' ' + ps[0] + ' ' + str(ps[1])
+            psc_str = psc_str + ' ' + ps[0] + ' ' + str(ps[1])
         output_str.append(psc_str)
 
     return output_str

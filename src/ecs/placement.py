@@ -31,9 +31,9 @@ def placement(input_lines, flavor_prediction_numbers):
     flavor_queue = []
     flavor_total = 0  # flavor总数
     for i, fn in enumerate(flavor_prediction_numbers):
-        flavor_total += fn
+        flavor_total = flavor_total + fn
         current_flavor_name = flavor_name[i]
-        flavor_queue += [current_flavor_name] * fn
+        flavor_queue = flavor_queue + [current_flavor_name] * fn
     # print flavor_name
     # print flavor_queue
     random.shuffle(flavor_queue)
@@ -45,10 +45,10 @@ def placement(input_lines, flavor_prediction_numbers):
     residual_MEM = physical_server_MEM
     for fq in flavor_queue:
         if CPU_dict[fq] <= residual_CPU and MEM_dict[fq] <= residual_MEM:
-            residual_CPU -= CPU_dict[fq]
-            residual_MEM -= CPU_dict[fq]
+            residual_CPU = residual_CPU - CPU_dict[fq]
+            residual_MEM = residual_MEM - MEM_dict[fq]
             if fq in physical_server:
-                physical_server[fq] += 1
+                physical_server[fq] = physical_server[fq] + 1
             else:
                 physical_server[fq] = 1
         else:
@@ -58,7 +58,20 @@ def placement(input_lines, flavor_prediction_numbers):
             residual_CPU = physical_server_CPU - CPU_dict[fq]
             residual_MEM = physical_server_MEM - MEM_dict[fq]
     physical_server_cluster.append(physical_server)
-    # print physical_server_cluster
+    print physical_server_cluster
+
+    resource_used_rate = []
+    for psc in physical_server_cluster:
+        psc_CPU = 0
+        psc_MEM = 0
+        physical_server = psc.items()
+        for ps in physical_server:
+            psc_CPU = psc_CPU + CPU_dict[ps[0]] * ps[1]
+            psc_MEM = psc_MEM + MEM_dict[ps[0]] * ps[1]
+        psc_CPU_rate = round(psc_CPU / float(physical_server_CPU), 4)
+        psc_MEM_rate = round(psc_MEM / float(physical_server_MEM), 4)
+        resource_used_rate.append([psc_CPU_rate, psc_MEM_rate])
+    print resource_used_rate
     # print flavor_prediction_numbers
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)

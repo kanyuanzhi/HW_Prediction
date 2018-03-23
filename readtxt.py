@@ -10,11 +10,6 @@ class InputTxtProcess():
     __input_data = __f_input.readlines()
     __f_input.close()
 
-    __prediction_start = __input_data[-2:-1][0].split(' ')[0]
-    __prediction_start_date = str_to_date(__prediction_start)
-    __prediction_end = __input_data[-1:][0].split(' ')[0]
-    __prediction_end_date = str_to_date(__prediction_end)
-
     def flavor_selected(self):
         flavor_selected = []  # input.txt中需要预测的flavor
         for id in self.__input_data:
@@ -22,14 +17,43 @@ class InputTxtProcess():
                 flavor_selected.append(id.split(' ')[0])
         return flavor_selected
 
-    def delta(self):
-        prediction_delta = (self.__prediction_end_date - self.__prediction_start_date).days  # 预测时间段的天数
-        operator = {7: 7, 14: 7}
-        DELTA = operator[prediction_delta]  # 切分统计的时间段
-        return DELTA
-
     def prediction_start_date(self):
-        return self.__prediction_start_date
+        prediction_start = self.__input_data[-2:-1][0].split(' ')[0]
+        prediction_start_date = str_to_date(prediction_start)
+        return prediction_start_date
+
+    def delta(self):
+        prediction_end = self.__input_data[-1:][0].split(' ')[0]
+        prediction_end_date = str_to_date(prediction_end)
+        prediction_delta = (prediction_end_date - self.prediction_start_date()).days  # 预测时间段的天数
+        operator = {7: 7, 14: 7}
+        delta = operator[prediction_delta]  # 切分统计的时间段
+        return delta
+
+    def flavor_specification(self):
+        """
+        各flavor的配置信息
+        :return:
+        """
+        flavor_specification = []
+        for id in self.__input_data:
+            if id[:6] == "flavor":
+                flavor_specification.append(id.split(' '))
+        return flavor_specification
+
+    def physical_server_specification(self):
+        """
+        物理服务器配置信息CPU，内存大小GB，硬盘大小GB
+        :return:
+        """
+        return self.__input_data[0].split(' ')
+
+    def resource_name(self):
+        """
+        需要优化的资源名称CPU或MEM
+        :return:
+        """
+        return self.__input_data[-4:-3]
 
 
 class TrainDataTxtProcess():

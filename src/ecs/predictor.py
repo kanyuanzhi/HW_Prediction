@@ -1,3 +1,7 @@
+# from data_process import data_process
+from placement import placement
+from prediction import prediction
+
 
 def predict_vm(ecs_lines, input_lines):
     # Do your work from here#
@@ -9,13 +13,6 @@ def predict_vm(ecs_lines, input_lines):
         print 'input file information is none'
         return result
 
-    for index, item in ecs_lines:
-        values = item.split(" ")
-        uuid = values[0]
-        flavorName = values[1]
-        createTime = values[2]
+    flavor_prediction_numbers = prediction(ecs_lines, input_lines)
 
-    for index, item in input_lines:
-        print "index of input data"
-
-    return result
+    return placement(input_lines, flavor_prediction_numbers)

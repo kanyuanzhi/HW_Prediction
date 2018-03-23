@@ -29,15 +29,15 @@ def main():
 
 
 def write_result(array, outpuFilePath):
-    with open(outpuFilePath, 'w') as output_file:
+    with open(os.path.dirname(__file__) + outpuFilePath, 'w') as output_file:
         for item in array:
             output_file.write("%s\n" % item)
 
 
 def read_lines(file_path):
-    if os.path.exists(file_path):
+    if os.path.exists(os.path.dirname(__file__) + file_path):
         array = []
-        with open(file_path, 'r') as lines:
+        with open(os.path.dirname(__file__) + file_path, 'r') as lines:
             for line in lines:
                 array.append(line)
         return array

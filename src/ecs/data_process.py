@@ -53,14 +53,16 @@ def __segmentation(flavor, fn, fnd, d, psd, sd):
     return result
 
 
-def data_process():
-    DELTA = InputTxtProcess().delta()  # 预测时间段的天数
-    flavor_selected = InputTxtProcess().flavor_selected()  # input.txt中需要预测的flavor
-    prediction_start_date = InputTxtProcess().prediction_start_date()
+def data_process(ecs_lines, input_lines):
+    itp = InputTxtProcess(input_lines)
+    DELTA = itp.delta()  # 预测时间段的天数
+    flavor_selected = itp.flavor_selected()  # input.txt中需要预测的flavor
+    prediction_start_date = itp.prediction_start_date()
 
-    start_date = TrainDataTxtProcess().start_date()
-    flavor_name = TrainDataTxtProcess().flavor_name()
-    flavor_name_datetime = TrainDataTxtProcess().flavor_name_datetime(flavor_name)
+    tdtp = TrainDataTxtProcess(ecs_lines)
+    start_date = tdtp.start_date()
+    flavor_name = tdtp.flavor_name()
+    flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)
 
     period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
     for fs in flavor_selected:
@@ -69,5 +71,3 @@ def data_process():
         period_data.append(item)
 
     return period_data
-
-

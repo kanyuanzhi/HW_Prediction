@@ -12,7 +12,7 @@ class InputTxtProcess():
     def __init__(self, input_lines):
         self.__input_lines = input_lines
 
-    # __f_input = open(os.path.dirname(__file__) + "/predict_vm/input.txt")
+    # __f_input = open(os.path.dirname(__file__) + "/xxx/input.txt")
     # __input_lines = __f_input.readlines()
     # __f_input.close()
 

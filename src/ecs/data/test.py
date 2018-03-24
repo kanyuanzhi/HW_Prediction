@@ -1,5 +1,6 @@
-fs = open('output.txt')
+a = [1,2,3,4,5,6,7,8,9]
 
-aa = fs.readlines()
+for i in a:
+    i=7
 
-print aa
+print int(0.9)

@@ -10,7 +10,8 @@ def placement(input_lines, flavor_prediction_numbers):
     flavor_specification = itp.flavor_specification()
 
     physical_server_CPU = int(physical_server_specification[0])  # 物理服务器CPU数量
-    physical_server_MEM = int(physical_server_specification[1]) * 1024  # 物理服务器内存大小
+    physical_server_MEM = int(
+        physical_server_specification[1]) * 1024  # 物理服务器内存大小
 
     flavor_name = []
     flavor_CPU = []
@@ -56,6 +57,7 @@ def placement(input_lines, flavor_prediction_numbers):
     physical_server_cluster.append(physical_server)
     # print physical_server_cluster
     # print flavor_prediction_numbers
+    print()
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)
 

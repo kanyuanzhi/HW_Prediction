@@ -1,6 +1,7 @@
 # coding=utf-8
 from readtxt import InputTxtProcess
 from writetxt import generate_output
+import random
 
 
 def placement(input_lines, flavor_prediction_numbers):
@@ -35,6 +36,8 @@ def placement(input_lines, flavor_prediction_numbers):
         flavor_queue += [current_flavor_name] * fn
     # print flavor_name
     # print flavor_queue
+    random.shuffle(flavor_queue)
+    # print flavor_queue
 
     physical_server_cluster = []
     physical_server = {}
@@ -57,7 +60,6 @@ def placement(input_lines, flavor_prediction_numbers):
     physical_server_cluster.append(physical_server)
     # print physical_server_cluster
     # print flavor_prediction_numbers
-    print()
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)
 

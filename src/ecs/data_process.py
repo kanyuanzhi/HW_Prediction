@@ -1,4 +1,4 @@
-# *coding=utf8
+# coding=utf-8
 from datetime import timedelta
 from readtxt import InputTxtProcess, TrainDataTxtProcess
 from string_tools import str_to_date

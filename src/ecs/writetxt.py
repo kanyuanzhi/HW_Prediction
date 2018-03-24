@@ -1,4 +1,4 @@
-# *coding=utf8
+# coding=utf-8
 def generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster):
     flavor_total = 0  # flavor总数
     for fn in flavor_prediction_numbers:

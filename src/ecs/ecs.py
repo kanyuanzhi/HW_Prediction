@@ -28,16 +28,23 @@ def main():
     print 'main function end.'
 
 
+def touch_file(file_path):
+    if os.path.exists(file_path):
+        return file_path
+    else:
+        return os.path.dirname(__file__) + file_path
+
+
 def write_result(array, outpuFilePath):
-    with open(os.path.dirname(__file__) + outpuFilePath, 'w') as output_file:
+    with open(touch_file(outpuFilePath), 'w') as output_file:
         for item in array:
             output_file.write("%s\n" % item)
 
 
 def read_lines(file_path):
-    if os.path.exists(os.path.dirname(__file__) + file_path):
+    if os.path.exists(touch_file(file_path)):
         array = []
-        with open(os.path.dirname(__file__) + file_path, 'r') as lines:
+        with open(touch_file(file_path), 'r') as lines:
             for line in lines:
                 array.append(line)
         return array

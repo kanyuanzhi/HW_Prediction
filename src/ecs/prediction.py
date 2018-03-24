@@ -1,6 +1,8 @@
 # *coding=utf8
 from data_process import data_process
-import matplotlib.pyplot as plt
+
+
+# import matplotlib.pyplot as plt
 
 
 def __average(prediction_numbers):

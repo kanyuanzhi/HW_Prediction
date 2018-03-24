@@ -6,7 +6,7 @@ from data_process import data_process
 
 def __your_prediction(prediction_numbers):
     num = 0
-    # 根据prediction_numbers预测该flavor在下一阶段的数量
+    # 根据prediction_numbers预测该flavor在下一阶段的数量num
     return num
 
 
@@ -21,15 +21,15 @@ def prediction(ecs_lines, input_lines):
     period_data = data_process(ecs_lines, input_lines)
     flavor_prediction_numbers = []
 
-    # example
+    # example ######
     # for ps in period_data:
     #    flavor_prediction_numbers.append(__your_prediction(ps[1]))
     ###########################
 
-
+    # test ######
     for ps in period_data:
         flavor_prediction_numbers.append(__average(ps[1]))
-
+    #########################
         # print ps[2]
         # print ps[0]
         # print ps[1]

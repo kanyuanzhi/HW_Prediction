@@ -1,15 +1,11 @@
-20
-flavor9 5
-flavor10 1
-flavor11 4
-flavor12 2
-flavor13 1
-flavor14 5
-flavor15 2
+0
+flavor9 0
+flavor10 0
+flavor11 0
+flavor12 0
+flavor13 0
+flavor14 0
+flavor15 0
 
-5
-1 flavor9 5 flavor11 2 flavor10 1
-2 flavor13 1 flavor12 2 flavor11 2
-3 flavor14 3
-4 flavor15 1 flavor14 2
-5 flavor15 1
+1
+1

@@ -18,10 +18,9 @@ def __average(prediction_numbers):
 
 
 def __onetime_exponential_smoothing(prediction_numbers):
-    alpha = 1.15
+    alpha = 1.1
     s1 = sum(prediction_numbers[0:3]) / 3.0
-    s_list = []
-    s_list.append(s1)
+    s_list = [s1]
     for i in range(1, len(prediction_numbers)):
         s = alpha * prediction_numbers[i] + (1 - alpha) * s_list[i - 1]
         s_list.append(s)

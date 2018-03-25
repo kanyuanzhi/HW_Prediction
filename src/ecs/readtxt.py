@@ -1,6 +1,6 @@
 # coding=utf-8
 from string_tools import str_to_date
-import os
+from datetime import timedelta
 
 
 class InputTxtProcess():
@@ -11,10 +11,6 @@ class InputTxtProcess():
 
     def __init__(self, input_lines):
         self.__input_lines = input_lines
-
-    # __f_input = open(os.path.dirname(__file__) + "/xxx/input.txt")
-    # __input_lines = __f_input.readlines()
-    # __f_input.close()
 
     def flavor_selected(self):
         flavor_selected = []  # input.txt中需要预测的flavor
@@ -71,13 +67,37 @@ class TrainDataTxtProcess():
     def __init__(self, ecs_lines):
         for d in ecs_lines:
             self.__data_matrix.append(d.split('\t'))
+        self.find_lost_date()
 
     def start_date(self):
         """
-        获取数据集的最早日期
+        获取数据集的开始日期
         :return:
         """
         return str_to_date(self.__data_matrix[0][2].split(' ')[0])
+
+    def end_date(self):
+        """
+        获取数据集的结尾日期
+        :return:
+        """
+        return str_to_date(self.__data_matrix[len(self.__data_matrix) - 1][2].split(' ')[0])
+
+    def find_lost_date(self):
+        lost_date = []
+        start_date = self.start_date()
+        end_date = self.end_date()
+        all_date = []
+        for dm in self.__data_matrix:
+            temp = str_to_date(dm[2].split(' ')[0])
+            if temp not in all_date:
+                all_date.append(temp)
+        current_date = start_date
+        while current_date <= end_date:
+            if current_date not in all_date:
+                lost_date.append(current_date)
+            current_date = current_date + timedelta(1)
+        return lost_date
 
     def flavor_name(self):
         """

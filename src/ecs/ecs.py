@@ -2,9 +2,11 @@
 import sys
 import os
 import predictor
+import time
 
 
 def main():
+    start_time = time.clock()
     print 'main function begin.'
     if len(sys.argv) != 4:
         print 'parameter is incorrect!'
@@ -26,6 +28,8 @@ def main():
         predic_result.append("NA")
         write_result(predic_result, resultFilePath)
     print 'main function end.'
+    end_time = time.clock() - start_time
+    print "running time:", end_time
 
 
 def write_result(array, outputFilePath):

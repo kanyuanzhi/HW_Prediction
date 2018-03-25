@@ -5,6 +5,14 @@ from string_tools import str_to_date
 
 
 def __requests_count_everyday(datetime_list, start_date, end_date, lost_date):
+    """
+    统计flavor在训练集全期内每一天的请求次数，对于缺失的日期，采用指数平滑进行填补
+    :param datetime_list:
+    :param start_date:
+    :param end_date:
+    :param lost_date: 缺失日期组成的序列
+    :return: {date：count}的字典
+    """
     date_count_dict = {}
     standardized_date_list = []
     for dl in datetime_list:
@@ -38,8 +46,8 @@ def __requests_count_everyday(datetime_list, start_date, end_date, lost_date):
 
 
 def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
-    """tongji
-
+    """
+    以时间段d(delta)划分数据集统计每段flavor的请求数
     :param flavor: flavor名称
     :param fn: flavor_name序列
     :param fnd: flavor_name_datetime序列
@@ -69,7 +77,6 @@ def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
     x_axis.reverse()
     del x_axis[0]
 
-    # todo:统计每个时间段flavor的请求数量应该有更快的算法
     left_date = start_count_date
     right_date = left_date + timedelta(d)
     while right_date <= psd:

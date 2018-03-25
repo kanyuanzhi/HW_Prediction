@@ -28,9 +28,9 @@ class InputTxtProcess():
         prediction_end = self.__input_lines[-1:][0].split(' ')[0]
         prediction_end_date = str_to_date(prediction_end)
         prediction_delta = (prediction_end_date - self.prediction_start_date()).days  # 预测时间段的天数
-        operator = {7: 7, 14: 7}
-        delta = operator[prediction_delta]  # 切分统计的时间段
-        return delta
+        # operator = {7: 7, 14: 7}
+        # delta = operator[prediction_delta]  # 切分统计的时间段
+        return prediction_delta
 
     def flavor_specification(self):
         """

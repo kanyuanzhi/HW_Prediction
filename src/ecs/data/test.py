@@ -1,6 +1,5 @@
-a = [1,2,3,4,5,6,7,8,9]
+fs_test = open("TrainData_1.txt")
+train_lines = fs_test.readlines()
+fs_test.close()
 
-for i in a:
-    i=7
-
-print int(0.9)
+print train_lines

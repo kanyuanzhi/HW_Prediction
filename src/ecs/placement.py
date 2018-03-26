@@ -113,6 +113,48 @@ def __placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_ME
     return physical_server_cluster
 
 
+def __placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource):
+    """
+    伪贪心算法
+    :param flavor_queue:
+    :param physical_server_CPU:
+    :param physical_server_MEM:
+    :param CPU_dict:
+    :param MEM_dict:
+    :param resource :优化目标资源CPU或MEM
+    :return:
+    """
+    physical_server = {}
+    physical_server_cluster = []
+    residual_CPU = physical_server_CPU
+    residual_MEM = physical_server_MEM
+    resource_dict = {"CPU": CPU_dict, "MEM": MEM_dict}[resource]
+    for i in range(1, len(flavor_queue)):
+        current_flavor = flavor_queue[i]
+        for j in range(i)[::-1]:
+            if resource_dict[current_flavor] < resource_dict[flavor_queue[j]]:
+                temp = flavor_queue[j]
+                flavor_queue[j] = current_flavor
+                flavor_queue[j + 1] = temp
+    for fq in flavor_queue:
+        if CPU_dict[fq] <= residual_CPU and MEM_dict[fq] <= residual_MEM:
+            residual_CPU = residual_CPU - CPU_dict[fq]
+            residual_MEM = residual_MEM - MEM_dict[fq]
+            if fq in physical_server:
+                physical_server[fq] = physical_server[fq] + 1
+            else:
+                physical_server[fq] = 1
+        else:
+            physical_server_cluster.append(physical_server)
+            physical_server = {}
+            physical_server[fq] = 1
+            residual_CPU = physical_server_CPU - CPU_dict[fq]
+            residual_MEM = physical_server_MEM - MEM_dict[fq]
+    physical_server_cluster.append(physical_server)
+    print physical_server_cluster
+    return physical_server_cluster
+
+
 def placement(input_lines, flavor_prediction_numbers):
     itp = InputTxtProcess(input_lines)
     resource_name = itp.resource_name()
@@ -150,9 +192,11 @@ def placement(input_lines, flavor_prediction_numbers):
     # physical_server_cluster1 = __placement_algorithm1(flavor_queue, physical_server_CPU, physical_server_MEM,
     #                                                  CPU_dict,
     #                                                  MEM_dict)
-    physical_server_cluster = __placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
-                                                     CPU_dict,
-                                                     MEM_dict)
+    # physical_server_cluster = __placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
+    #                                                  CPU_dict, MEM_dict)
+
+    physical_server_cluster = __placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
+                                                     MEM_dict, resource_name)
 
     # __resource_used_watch(physical_server_cluster1, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
     # __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)

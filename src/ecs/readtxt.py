@@ -55,7 +55,7 @@ class InputTxtProcess():
         需要优化的资源名称CPU或MEM
         :return:
         """
-        return self.__input_lines[-4:-3]
+        return self.__input_lines[-4:-3][0][0:3]
 
 
 class TrainDataTxtProcess():

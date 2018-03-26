@@ -24,10 +24,13 @@ class InputTxtProcess():
         prediction_start_date = str_to_date(prediction_start)
         return prediction_start_date
 
-    def delta(self):
+    def prediction_end_date(self):
         prediction_end = self.__input_lines[-1:][0].split(' ')[0]
         prediction_end_date = str_to_date(prediction_end)
-        prediction_delta = (prediction_end_date - self.prediction_start_date()).days  # 预测时间段的天数
+        return prediction_end_date
+
+    def delta(self):
+        prediction_delta = (self.prediction_end_date() - self.prediction_start_date()).days  # 预测时间段的天数
         # operator = {7: 7, 14: 7}
         # delta = operator[prediction_delta]  # 切分统计的时间段
         return prediction_delta
@@ -65,6 +68,7 @@ class TrainDataTxtProcess():
     __data_matrix = []
 
     def __init__(self, ecs_lines):
+        self.__data_matrix = []
         for d in ecs_lines:
             self.__data_matrix.append(d.split('\t'))
         self.find_lost_date()

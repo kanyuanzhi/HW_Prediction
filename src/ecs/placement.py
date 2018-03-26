@@ -151,7 +151,6 @@ def __placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_ME
             residual_CPU = physical_server_CPU - CPU_dict[fq]
             residual_MEM = physical_server_MEM - MEM_dict[fq]
     physical_server_cluster.append(physical_server)
-    print physical_server_cluster
     return physical_server_cluster
 
 

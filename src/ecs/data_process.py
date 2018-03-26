@@ -118,3 +118,62 @@ def data_process(ecs_lines, input_lines):
         period_data.append(item)
 
     return period_data
+
+
+def data_process_oneday(ecs_lines, input_lines):
+    itp = InputTxtProcess(input_lines)
+    DELTA = itp.delta()  # 预测时间段的天数
+    flavor_selected = itp.flavor_selected()  # input.txt中需要预测的flavor
+    prediction_start_date = itp.prediction_start_date()
+
+    tdtp = TrainDataTxtProcess(ecs_lines)
+    start_date = tdtp.start_date()  # 训练集开始日期
+    end_date = tdtp.end_date()  # 训练集结束日期
+    flavor_name = tdtp.flavor_name()
+    flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)
+    lost_date = tdtp.find_lost_date()
+
+    period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
+    for fs in flavor_selected:
+        item = __segmentation(fs, flavor_name, flavor_name_datetime, 1, prediction_start_date, start_date, end_date,
+                              lost_date)
+        item.append(fs)
+        period_data.append(item)
+    return period_data
+
+
+def data_compare(flavor_prediction_numbers, input_lines, ecs_lines):
+    """
+    预测值与实际值作比较
+    :param flavor_prediction_numbers:
+    :param input_lines:
+    :param ecs_lines:
+    :return:
+    """
+    itp = InputTxtProcess(input_lines)
+    flavor_selected = itp.flavor_selected()  # input.txt中需要预测的flavor
+    prediction_start_date = itp.prediction_start_date()
+    prediction_end_date = itp.prediction_end_date()
+
+    tdtp = TrainDataTxtProcess(ecs_lines)
+    flavor_name = tdtp.flavor_name()
+    flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)
+
+    flavor_real_numbers = []
+    for fs in flavor_selected:
+        index = flavor_name.index(fs)
+        datetime_list = flavor_name_datetime[index]
+        count = 0
+        for dl in datetime_list:
+            if prediction_start_date <= str_to_date(dl.split(' ')[0]) < prediction_end_date:
+                count = count + 1
+        flavor_real_numbers.append(count)
+    print "实际值：", flavor_real_numbers
+    print "预测值：", flavor_prediction_numbers
+    n = len(flavor_real_numbers)
+    a = list(map(lambda x: x[0] - x[1], zip(flavor_real_numbers, flavor_prediction_numbers)))
+    c = pow(sum([pow(i, 2) for i in a]) / float(n), 0.5)
+    d = pow(sum([pow(i, 2) for i in flavor_real_numbers]) / float(n), 0.5) + \
+        pow(sum([pow(i, 2) for i in flavor_prediction_numbers]) / float(n), 0.5)
+    score = round((1 - c / d) * 100, 2)
+    print "得分：", score, "/ 100"

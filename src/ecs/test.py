@@ -47,5 +47,8 @@ import matplotlib.pylab as plb
 # plt.gcf().autofmt_xdate()
 # plt.show()
 
-for i in range(10)[::-1]:
-    print i
+a = [1, 2, 3, 4, 5]
+c = [1, 3, 4, 5, 6]
+d = list(map(lambda x: x[0] + x[1], zip(a, c)))
+b = [pow(i, 2) for i in a]
+print d

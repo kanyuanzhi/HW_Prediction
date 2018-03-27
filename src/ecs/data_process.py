@@ -177,3 +177,4 @@ def data_compare(flavor_prediction_numbers, input_lines, ecs_lines):
         pow(sum([pow(i, 2) for i in flavor_prediction_numbers]) / float(n), 0.5)
     score = round((1 - c / d) * 100, 2)
     print "得分：", score, "/ 100"
+    return score

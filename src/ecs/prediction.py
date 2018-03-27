@@ -1,10 +1,12 @@
 # coding=utf-8
-from data_process import data_process, data_process_oneday,data_compare
+from data_process import data_process, data_process_oneday, data_compare
 from readtxt import InputTxtProcess
+from adaline import adaline
 
-import pandas as pd
-# import statsmodels.api as sm
-import matplotlib.pyplot as plt
+
+# import pandas as pd
+# # import statsmodels.api as sm
+# import matplotlib.pyplot as plt
 
 
 def __your_prediction(prediction_numbers):
@@ -62,8 +64,14 @@ def prediction(ecs_lines, input_lines):
     # for ps in period_data:
     #    flavor_prediction_numbers.append(__your_prediction(ps[1]))
     ###########################
+    # for ps in period_data:
+    #     flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
+
     for ps in period_data:
-        flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
+        flavor_prediction_numbers.append(adaline(ps[1], len(period_data[0][1]) / 2 + 2))
+
+    # adaline(period_data[1][1], 10)
+
 
     # plt.figure(0)
     # for i, ps in enumerate(period_data_oneday):

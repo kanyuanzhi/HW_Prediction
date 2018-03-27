@@ -2,6 +2,7 @@
 from data_process import data_process, data_process_oneday, data_compare
 from readtxt import InputTxtProcess
 from adaline import adaline
+from bp_network import bp_network
 
 
 # import pandas as pd
@@ -64,11 +65,13 @@ def prediction(ecs_lines, input_lines):
     # for ps in period_data:
     #    flavor_prediction_numbers.append(__your_prediction(ps[1]))
     ###########################
-    # for ps in period_data:
-    #     flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
-
     for ps in period_data:
-        flavor_prediction_numbers.append(adaline(ps[1], len(period_data[0][1]) / 2 + 2))
+        flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
+
+    bp_network(period_data[7][1],len(period_data[0][1]) / 2 + 2)
+
+    # for ps in period_data:
+    #     flavor_prediction_numbers.append(adaline(ps[1], len(period_data[0][1]) / 2 + 2))
 
     # adaline(period_data[1][1], 10)
 

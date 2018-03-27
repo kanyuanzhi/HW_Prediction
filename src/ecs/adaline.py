@@ -125,9 +125,9 @@ def adaline(prediction_numbers, related_numbers):
     num = int(1.1*round(w1_multiply_p_test[0][0] + b1))
     if num < 0:
         num = 0
-    # a = [i + b1 for i in __dot(w1, p)[0]]
-    # print "a:", a
-    # print "t", t
+    a = [i + b1 for i in __dot(w1, p)[0]]
+    print "a:", a
+    print "t", t
     # # print "p_test:", p_test
     # # print "w1:", w1
     # print "b1:", b1

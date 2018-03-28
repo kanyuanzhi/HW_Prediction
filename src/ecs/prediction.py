@@ -16,11 +16,9 @@ def __your_prediction(prediction_numbers):
     return num
 
 
-def __average(prediction_numbers):
-    sum = 0
-    for pn in prediction_numbers:
-        sum = sum + pn
-    return int(sum / len(prediction_numbers))
+def __average(prediction_numbers, period):
+    prediction_list = prediction_numbers[-period:]
+    return int(sum(prediction_list) / period)
 
 
 def __onetime_exponential_smoothing(prediction_numbers):
@@ -28,7 +26,7 @@ def __onetime_exponential_smoothing(prediction_numbers):
     s1 = sum(prediction_numbers[0:3]) / 3.0
     s_list = [s1]
     for i in range(1, len(prediction_numbers)):
-        s = (alpha * prediction_numbers[i] + (1 - alpha) * s_list[i - 1]) * 1.1
+        s = (alpha * prediction_numbers[i] + (1 - alpha) * s_list[i - 1])
         s_list.append(s)
 
     num = int(round(s_list[len(s_list) - 1]))
@@ -62,14 +60,14 @@ def prediction(ecs_lines, input_lines):
     period_data = data_process(ecs_lines, input_lines)
     flavor_prediction_numbers = []
     # example ######
-    # for ps in period_data:
-    #    flavor_prediction_numbers.append(__your_prediction(ps[1]))
+    for ps in period_data:
+        flavor_prediction_numbers.append(__average(ps[1], 2))
     ###########################
     # for ps in period_data:
     #     flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
 
-    for ps in period_data:
-        flavor_prediction_numbers.append(bp_network(ps[1], len(period_data[0][1]) / 2 + 2, ps[2]))
+    # for ps in period_data:
+    #     flavor_prediction_numbers.append(bp_network(ps[1], len(period_data[0][1]) / 2 + 2, ps[2]))
 
     # bp_network(period_data[7][1],len(period_data[0][1]) / 2 + 2)
 
@@ -114,6 +112,6 @@ def prediction(ecs_lines, input_lines):
     # plt.show()
     # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 
-    data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
+    # data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
 
     return flavor_prediction_numbers

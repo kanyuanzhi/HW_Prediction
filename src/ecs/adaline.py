@@ -3,16 +3,6 @@ import random
 import math
 
 
-def __tansig(x):  # 双曲正切S型函数
-    result = (1 - math.exp(-x)) / (1 + math.exp(-x))
-    return result
-
-
-def __dtansig(x):  # 双曲正切S型函数的导数
-    result = 2 / (math.exp(x) + math.exp(-x) + 2)
-    return result
-
-
 def __dot(A, B):
     """
     计算矩阵乘法
@@ -90,7 +80,7 @@ def adaline(prediction_numbers, related_numbers):
     w1 = [[random.randint(-10000, 10000) / 10000.0 for i in range(related_numbers)]]
     b1 = random.randint(-10000, 10000) / 10000.0
     eta = 0.02  # 学习速率
-    max_epoch = 1000000
+    max_epoch = 100000
     error_goal = 0.01
 
     # print "w1:", w1
@@ -103,11 +93,19 @@ def adaline(prediction_numbers, related_numbers):
     # print "a:", a
     # print "e:", e
     # print "sse:", sse
-
+    SSETemp = sse
     for epoch in range(max_epoch):
         # print "sse:", epoch, sse
         if sse <= error_goal:
             break
+        # if (sse < SSETemp):
+        #     eta = 1.05 * eta
+        # elif (sse > SSETemp):
+        #     eta = 0.8 * eta
+        # else:
+        #     eta = eta
+        # print eta
+        # SSETemp = sse
         e_multiply_p = __dot([e], __transpose(p))
         dw1 = [[ep * eta for ep in e_multiply_p[0]]]
         # print "dw1:", dw1

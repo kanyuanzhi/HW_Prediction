@@ -74,54 +74,74 @@ def __mat(a, n):
 
 def __matrix_add(A, B):
     """
-    矩阵加法
+    矩阵加法B可以是矩阵或一个常数,对应位相加
     :param A:
     :param B:
     :return:
     """
-    A_rows = len(A)
-    A_cols = len(A[0])
-    B_rows = len(B)
-    B_cols = len(B[0])
-    if A_rows != B_rows and A_cols != B_cols:
-        print "矩阵无法相加！"
-        return
-    C = [[0 for j in range(A_cols)] for i in range(A_rows)]
-    for i in range(A_rows):
-        for j in range(A_cols):
-            C[i][j] = A[i][j] + B[i][j]
-    return C
+    if isinstance(A, list):
+        A_rows = len(A)
+        A_cols = len(A[0])
+        if isinstance(B, list):
+            B_rows = len(B)
+            B_cols = len(B[0])
+            if A_rows != B_rows and A_cols != B_cols:
+                print "矩阵无法相加！"
+                return
+            C = [[0 for j in range(A_cols)] for i in range(A_rows)]
+            for i in range(A_rows):
+                for j in range(A_cols):
+                    C[i][j] = A[i][j] + B[i][j]
+            return C
+        else:
+            C = [[B for j in range(A_cols)] for i in range(A_rows)]
+            return __matrix_add(A, C)
+    else:
+        return A + B
 
 
 def __matrix_arithmetic_multiply(A, B):
     """
-    矩阵对应位相乘
+    矩阵对应位相乘，B可为一个常数
     :param A:
     :param B:
     :return:
     """
-    A_rows = len(A)
-    A_cols = len(A[0])
-    B_rows = len(B)
-    B_cols = len(B[0])
-    if A_rows != B_rows and A_cols != B_cols:
-        print "矩阵无法相对应位相乘"
-        return
-    C = [[0 for j in range(A_cols)] for i in range(A_rows)]
-    for i in range(A_rows):
-        for j in range(A_cols):
-            C[i][j] = A[i][j] * B[i][j]
-    return C
+    if isinstance(A, list):
+        A_rows = len(A)
+        A_cols = len(A[0])
+        if isinstance(B, list):
+            B_rows = len(B)
+            B_cols = len(B[0])
+            if A_rows != B_rows and A_cols != B_cols:
+                print "矩阵无法相对应位相乘"
+                return
+            C = [[0 for j in range(A_cols)] for i in range(A_rows)]
+            for i in range(A_rows):
+                for j in range(A_cols):
+                    C[i][j] = A[i][j] * B[i][j]
+            return C
+        else:
+            C = [[B for j in range(A_cols)] for i in range(A_rows)]
+            return __matrix_arithmetic_multiply(A, C)
+    else:
+        return A * B
 
 
-def __matrix_multiply_constant(A, con):
-    A_rows = len(A)
-    A_cols = len(A[0])
-    B = [[0 for j in range(A_cols)] for i in range(A_rows)]
-    for i in range(A_rows):
-        for j in range(A_cols):
-            B[i][j] = A[i][j] * con
-    return B
+# def __matrix_arithmetic_multiply(A, con):
+#     """
+#     矩阵每位乘一个常数
+#     :param A:
+#     :param con:
+#     :return:
+#     """
+#     A_rows = len(A)
+#     A_cols = len(A[0])
+#     B = [[0 for j in range(A_cols)] for i in range(A_rows)]
+#     for i in range(A_rows):
+#         for j in range(A_cols):
+#             B[i][j] = A[i][j] * con
+#     return B
 
 
 def __transpose(A):
@@ -138,6 +158,8 @@ def __normalized(array):
     max_a = max(array)
     if max_a != 0:
         new_array = [a / max_a for a in array]
+    else:
+        new_array = [0 for a in array]
     return new_array
 
 
@@ -149,11 +171,11 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     :param related_numbers: int
     :return:
     """
-    print len(prediction_numbers)
-    print related_numbers
+    # print len(prediction_numbers)
+    # print related_numbers
 
-    s = len(prediction_numbers)-related_numbers
-    s=9
+    s = len(prediction_numbers) - related_numbers
+    s = related_numbers
     p_test = []  # 用以计算预测结果的矩阵
     # for pn in prediction_numbers[-related_numbers:]:
     #     p_test.append([pn])
@@ -183,8 +205,8 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     # for i in range(related_numbers):
     #     print p[i]
     #
-    print "len(p):", len(p)
-    print "len(p[0]):", len(p[0])
+    # print "len(p):", len(p)
+    # print "len(p[0]):", len(p[0])
 
     w1 = [[random.randint(-10000, 10000) / 10000.0 for i in range(s)] for j in range(related_numbers)]
     b1 = [[random.randint(-10000, 10000) / 10000.0] for j in range(s)]
@@ -192,8 +214,8 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     w2 = [[random.randint(-10000, 10000) / 10000.0] for i in range(s)]
     b2 = [[random.randint(-10000, 10000) / 10000.0]]
     b2_matrix = __mat(b2, len(p[0]))
-    eta = 0.02  # 学习速率
-    max_epoch = 100000
+    eta = 0.017  # 学习速率
+    max_epoch = 50000
     error_goal = 0.01
 
     # print "w1:", w1
@@ -215,22 +237,35 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     e = [[t[0][i] - a2[0][i] for i in range(len(t[0]))]]
     # print "e:", e
     sse = sum([i ** 2 for i in e[0]]) / 2
-    SSETemp = sse
+    sse_temp = sse
+    dw1_temp = 0
+    dw2_temp = 0
+    db1_temp = 0
+    db2_temp = 0
+    mc = 0.95
+
     for epoch in range(max_epoch):
-        print flavor_name,"_sse:", sse
+        # print flavor_name,"_sse:", sse
         if sse < error_goal:
             break
-        # if (sse < SSETemp):
-        #     eta = 1.05 * eta
-        # elif (sse > SSETemp):
-        #     eta = 0.8 * eta
-        # else:
-        #     eta = eta
+        if (sse < sse_temp):
+            mc = 0.95
+        elif (sse > 1.04 * sse_temp):
+            mc = 0
+        else:
+            mc = mc
+        sse_temp = sse
         # print eta
-        SSETemp = sse
-        dw2 = __matrix_multiply_constant(__dot(a1, __transpose(e)), eta)
+        # dw2 = __matrix_arithmetic_multiply(__dot(a1, __transpose(e)), eta)
+        # 附加动量法
+        dw2 = __matrix_add(__matrix_arithmetic_multiply(__dot(a1, __transpose(e)), (1 - mc) * eta),
+                           __matrix_arithmetic_multiply(dw2_temp, mc))
+        dw2_temp = dw2
         # print "dw2:", dw2
-        db2 = __matrix_multiply_constant(__transpose(e), eta)
+        # db2 = __matrix_arithmetic_multiply(__transpose(e), eta)
+        db2 = __matrix_add(__matrix_arithmetic_multiply(__transpose(e), (1 - mc) * eta),
+                           __matrix_arithmetic_multiply(db2_temp, mc))
+        db2_temp = db2
         # print "db2:", db2
 
         w2 = __matrix_add(w2, dw2)
@@ -243,13 +278,21 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
 
         e0 = __dot(w2, e)
         delta = __matrix_arithmetic_multiply(e0, a1_d)
-        dw1 = __matrix_multiply_constant(__dot(p, __transpose(delta)), eta)
+        # dw1 = __matrix_arithmetic_multiply(__dot(p, __transpose(delta)),eta)
+        dw1 = __matrix_add(__matrix_arithmetic_multiply(__dot(p, __transpose(delta)), (1 - mc) * eta),
+                           __matrix_arithmetic_multiply(dw1_temp, mc))
+        dw1_temp = dw1
+
         w1 = __matrix_add(w1, dw1)
 
         db1_delta = []
         for d in delta:
             db1_delta.append([sum(d)])
-        db1 = __matrix_multiply_constant(db1_delta, eta)
+
+        # db1 = __matrix_arithmetic_multiply(db1_delta, eta)
+        db1 = __matrix_add(__matrix_arithmetic_multiply(db1_delta, (1 - mc) * eta),
+                           __matrix_arithmetic_multiply(db1_temp, mc))
+        db1_temp = db1
 
         b1 = __matrix_add(b1, db1)
         b1_matrix = __mat(b1, len(p[0]))
@@ -261,12 +304,16 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
         # print "a2", a2
         e = [[t[0][i] - a2[0][i] for i in range(len(t[0]))]]
         # print "e:", e
-        sse = sum([i ** 2 for i in e[0]]) / 2
-        # for i in range(len(a1)):
-        #     print a1[i]
+        try:
+            sse = sum([i ** 2 for i in e[0]]) / 2
+        except OverflowError:
+            print e[0]
+            print epoch
+            # for i in range(len(a1)):
+            #     print a1[i]
 
-        # print "delta rows:", len(delta)
-        # print "delta cols:", len(delta[0])
+            # print "delta rows:", len(delta)
+            # print "delta cols:", len(delta[0])
     a1_origin = __matrix_add(__dot(__transpose(w1), p), b1_matrix)
     a1 = __matrix_tansig(a1_origin)
     a2 = __matrix_add(__dot(__transpose(w2), a1), b2_matrix)

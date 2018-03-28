@@ -145,12 +145,15 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     """
     a1 = __tansig(w1 * p + b1)
     a2 = w2 * a1 + b2
-    :param prediction_numbers:
-    :param related_numbers:
+    :param prediction_numbers: list
+    :param related_numbers: int
     :return:
     """
+    print len(prediction_numbers)
+    print related_numbers
 
-    s = related_numbers
+    s = len(prediction_numbers)-related_numbers
+    s=9
     p_test = []  # 用以计算预测结果的矩阵
     # for pn in prediction_numbers[-related_numbers:]:
     #     p_test.append([pn])
@@ -189,8 +192,8 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     w2 = [[random.randint(-10000, 10000) / 10000.0] for i in range(s)]
     b2 = [[random.randint(-10000, 10000) / 10000.0]]
     b2_matrix = __mat(b2, len(p[0]))
-    eta = 0.017  # 学习速率
-    max_epoch = 1000000
+    eta = 0.02  # 学习速率
+    max_epoch = 100000
     error_goal = 0.01
 
     # print "w1:", w1
@@ -267,8 +270,8 @@ def bp_network(prediction_numbers, related_numbers, flavor_name):
     a1_origin = __matrix_add(__dot(__transpose(w1), p), b1_matrix)
     a1 = __matrix_tansig(a1_origin)
     a2 = __matrix_add(__dot(__transpose(w2), a1), b2_matrix)
-    # print "a2:", a2
-    # print "t", t
+    print "a2:", a2
+    print "t", t
 
     num = int(round(
         __matrix_add(__dot(__transpose(w2), __matrix_tansig(__matrix_add(__dot(__transpose(w1), p_test), b1_matrix))),

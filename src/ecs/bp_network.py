@@ -146,7 +146,7 @@ def bp_network(prediction_numbers, related_numbers):
     :param related_numbers:
     :return:
     """
-    s =10
+    s = 10
     p_test = []  # 用以计算预测结果的矩阵
     # for pn in prediction_numbers[-related_numbers:]:
     #     p_test.append([pn])
@@ -185,7 +185,7 @@ def bp_network(prediction_numbers, related_numbers):
     w2 = [[random.randint(-10000, 10000) / 10000.0] for i in range(s)]
     b2 = [[random.randint(-10000, 10000) / 10000.0]]
     b2_matrix = __mat(b2, len(p[0]))
-    eta = 0.02  # 学习速率
+    eta = 0.017  # 学习速率
     max_epoch = 1000000
     error_goal = 0.01
 
@@ -214,16 +214,16 @@ def bp_network(prediction_numbers, related_numbers):
             break
         dw2 = __matrix_multiply_constant(__dot(a1, __transpose(e)), eta)
         print "dw2:", dw2
-        db2 = __transpose(e)
+        db2 = __matrix_multiply_constant(__transpose(e), eta)
         print "db2:", db2
 
         w2 = __matrix_add(w2, dw2)
-        b2 = [[b2[0][0] + sum(__transpose(db2)[0]) / len(__transpose(db2)[0])]]
+        b2 = [[b2[0][0] + sum(__transpose(db2)[0])]]
         b2_matrix = __mat(b2, len(p[0]))
 
         print "w2:", w2
 
-        a1_d = __matrix_tansig(a1_origin)
+        a1_d = __matrix_dtansig(a1_origin)
 
         e0 = __dot(w2, e)
         delta = __matrix_arithmetic_multiply(e0, a1_d)
@@ -232,7 +232,7 @@ def bp_network(prediction_numbers, related_numbers):
 
         db1_delta = []
         for d in delta:
-            db1_delta.append([sum(d) / len(d)])
+            db1_delta.append([sum(d)])
         db1 = __matrix_multiply_constant(db1_delta, eta)
 
         b1 = __matrix_add(b1, db1)
@@ -246,8 +246,8 @@ def bp_network(prediction_numbers, related_numbers):
         e = [[t[0][i] - a2[0][i] for i in range(len(t[0]))]]
         print "e:", e
         sse = sum([i ** 2 for i in e[0]]) / 2
-    # for i in range(len(a1)):
-    #     print a1[i]
+        # for i in range(len(a1)):
+        #     print a1[i]
 
-    # print "delta rows:", len(delta)
-    # print "delta cols:", len(delta[0])
+        # print "delta rows:", len(delta)
+        # print "delta cols:", len(delta[0])

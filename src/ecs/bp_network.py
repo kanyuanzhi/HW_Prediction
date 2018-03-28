@@ -4,7 +4,10 @@ import math
 
 
 def __tansig(x):  # 双曲正切S型函数
-    result = (1 - math.exp(-x)) / (1 + math.exp(-x))
+    try:
+        result = (1 - math.exp(-x)) / (1 + math.exp(-x))
+    except OverflowError:
+        result = -1
     return result
 
 
@@ -69,7 +72,7 @@ def __mat(a, n):
     return b
 
 
-def __matrix_arithmetic_multiply(A, B):
+def __matrix_add(A, B):
     """
     矩阵加法
     :param A:
@@ -90,7 +93,7 @@ def __matrix_arithmetic_multiply(A, B):
     return C
 
 
-def __matrix_add(A, B):
+def __matrix_arithmetic_multiply(A, B):
     """
     矩阵对应位相乘
     :param A:
@@ -138,7 +141,7 @@ def __normalized(array):
     return new_array
 
 
-def bp_network(prediction_numbers, related_numbers):
+def bp_network(prediction_numbers, related_numbers, flavor_name):
     """
     a1 = __tansig(w1 * p + b1)
     a2 = w2 * a1 + b2
@@ -146,7 +149,8 @@ def bp_network(prediction_numbers, related_numbers):
     :param related_numbers:
     :return:
     """
-    s = 10
+
+    s = related_numbers
     p_test = []  # 用以计算预测结果的矩阵
     # for pn in prediction_numbers[-related_numbers:]:
     #     p_test.append([pn])
@@ -155,7 +159,7 @@ def bp_network(prediction_numbers, related_numbers):
     for pn in prediction_numbers[related_numbers:]:
         t.append(float(pn))
     t = [t]
-    print t
+    # print t
 
     p = [[] for i in range(related_numbers)]  # 切分后的输入数组
     for i in range(0, len(prediction_numbers) - related_numbers + 1):
@@ -171,13 +175,13 @@ def bp_network(prediction_numbers, related_numbers):
         p_test.append([new_p[i].pop()])
 
     p = new_p
-    print p
+    # print p
 
     # for i in range(related_numbers):
     #     print p[i]
     #
-    # print "len(p):", len(p)
-    # print "len(p[0]):", len(p[0])
+    print "len(p):", len(p)
+    print "len(p[0]):", len(p[0])
 
     w1 = [[random.randint(-10000, 10000) / 10000.0 for i in range(s)] for j in range(related_numbers)]
     b1 = [[random.randint(-10000, 10000) / 10000.0] for j in range(s)]
@@ -189,39 +193,48 @@ def bp_network(prediction_numbers, related_numbers):
     max_epoch = 1000000
     error_goal = 0.01
 
-    print "w1:", w1
-    print "b1_matrix:", b1_matrix
-    print "b1:", b1
-    print "w2:", w2
-    print "b2_matrix:", b2_matrix
+    # print "w1:", w1
+    # print __transpose(w1)
+    # print "b1_matrix:", b1_matrix
+    # print "b1:", b1
+    # print "w2:", w2
+    # print "b2_matrix:", b2_matrix
 
     a1_origin = __matrix_add(__dot(__transpose(w1), p), b1_matrix)
-    print "a1_origin:", a1_origin
+    # print "a1_origin:", a1_origin
     a1 = __matrix_tansig(a1_origin)
-    print "a1:", a1
+    # print "a1:", a1
 
     a2 = __matrix_add(__dot(__transpose(w2), a1), b2_matrix)
 
-    print "a2", a2
+    # print "a2", a2
 
     e = [[t[0][i] - a2[0][i] for i in range(len(t[0]))]]
-    print "e:", e
+    # print "e:", e
     sse = sum([i ** 2 for i in e[0]]) / 2
-
+    SSETemp = sse
     for epoch in range(max_epoch):
-        print "sse:", sse
+        print flavor_name,"_sse:", sse
         if sse < error_goal:
             break
+        # if (sse < SSETemp):
+        #     eta = 1.05 * eta
+        # elif (sse > SSETemp):
+        #     eta = 0.8 * eta
+        # else:
+        #     eta = eta
+        # print eta
+        SSETemp = sse
         dw2 = __matrix_multiply_constant(__dot(a1, __transpose(e)), eta)
-        print "dw2:", dw2
+        # print "dw2:", dw2
         db2 = __matrix_multiply_constant(__transpose(e), eta)
-        print "db2:", db2
+        # print "db2:", db2
 
         w2 = __matrix_add(w2, dw2)
         b2 = [[b2[0][0] + sum(__transpose(db2)[0])]]
         b2_matrix = __mat(b2, len(p[0]))
 
-        print "w2:", w2
+        # print "w2:", w2
 
         a1_d = __matrix_dtansig(a1_origin)
 
@@ -244,10 +257,23 @@ def bp_network(prediction_numbers, related_numbers):
         a2 = __matrix_add(__dot(__transpose(w2), a1), b2_matrix)
         # print "a2", a2
         e = [[t[0][i] - a2[0][i] for i in range(len(t[0]))]]
-        print "e:", e
+        # print "e:", e
         sse = sum([i ** 2 for i in e[0]]) / 2
         # for i in range(len(a1)):
         #     print a1[i]
 
         # print "delta rows:", len(delta)
         # print "delta cols:", len(delta[0])
+    a1_origin = __matrix_add(__dot(__transpose(w1), p), b1_matrix)
+    a1 = __matrix_tansig(a1_origin)
+    a2 = __matrix_add(__dot(__transpose(w2), a1), b2_matrix)
+    # print "a2:", a2
+    # print "t", t
+
+    num = int(round(
+        __matrix_add(__dot(__transpose(w2), __matrix_tansig(__matrix_add(__dot(__transpose(w1), p_test), b1_matrix))),
+                     b2_matrix)[0][0]))
+    if num < 0:
+        num = 0
+    # print "num:", num
+    return num

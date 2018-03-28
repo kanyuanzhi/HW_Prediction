@@ -65,10 +65,13 @@ def prediction(ecs_lines, input_lines):
     # for ps in period_data:
     #    flavor_prediction_numbers.append(__your_prediction(ps[1]))
     ###########################
-    for ps in period_data:
-        flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
+    # for ps in period_data:
+    #     flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
 
-    bp_network(period_data[7][1],len(period_data[0][1]) / 2 + 2)
+    for ps in period_data:
+        flavor_prediction_numbers.append(bp_network(ps[1], len(period_data[0][1]) / 2 + 2, ps[2]))
+
+    # bp_network(period_data[7][1],len(period_data[0][1]) / 2 + 2)
 
     # for ps in period_data:
     #     flavor_prediction_numbers.append(adaline(ps[1], len(period_data[0][1]) / 2 + 2))

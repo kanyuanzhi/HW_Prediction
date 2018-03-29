@@ -1,13 +1,14 @@
 # coding=utf-8
-from data_process import data_process, data_process_oneday, data_compare
+from data_process import *
 from readtxt import InputTxtProcess
 from adaline import adaline
 from bp_network import bp_network
 
-
 # import pandas as pd
-# # import statsmodels.api as sm
+# # # import statsmodels.api as sm
+# import matplotlib.dates as mdates
 # import matplotlib.pyplot as plt
+# import matplotlib as mpl
 
 
 def __your_prediction(prediction_numbers):
@@ -55,13 +56,13 @@ def __onetime_exponential_smoothing_enhanced(prediction_numbers):
 def prediction(ecs_lines, input_lines):
     # itp = InputTxtProcess(input_lines)
     # delta = itp.delta()  # 预测时间段的天数
-    # period_data_oneday = data_process_oneday(ecs_lines, input_lines)  # 不切分，按天输出
+    period_data_oneday = data_process_oneday(ecs_lines, input_lines)  # 不切分，按天输出
 
     period_data = data_process(ecs_lines, input_lines)
     flavor_prediction_numbers = []
     # example ######
     for ps in period_data:
-        flavor_prediction_numbers.append(__average(ps[1], 2))
+        flavor_prediction_numbers.append(__average(ps[1], 1))
     ###########################
     # for ps in period_data:
     #     flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
@@ -106,9 +107,18 @@ def prediction(ecs_lines, input_lines):
     # print ps[2]
     # print ps[0]
     # print ps[1]
-    # plt.plot(ps[1], label=ps[2], linestyle="-")
-    #
+
+    # period_data_accumulate = data_process_oneday_accumulate(ecs_lines, input_lines)
+    # # xs = period_data_oneday[0][0]
+    # xs = period_data_accumulate[0][0]
+    # plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+    # plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+    # # for i, ps in enumerate(period_data_oneday):
+    # for i, ps in enumerate(period_data_accumulate):
+    #     plt.plot(xs, ps[1], label=ps[2], linestyle="-")
+    # plt.gcf().autofmt_xdate()
     # plt.legend(loc='upper left')
+    # plt.grid(True)
     # plt.show()
     # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 

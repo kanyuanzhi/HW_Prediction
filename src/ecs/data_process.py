@@ -13,6 +13,17 @@ def __requests_count_everyday(datetime_list, start_date, end_date, lost_date):
     :param lost_date: 缺失日期组成的序列
     :return: {date：count}的字典
     """
+    holiday_date = ['2013-01-01', '2013-02-09', '2013-05-01', '2013-10-01', '2013-11-11',
+                    '2014-01-01', '2014-01-30', '2014-05-01', '2014-10-01', '2014-11-11',
+                    '2015-01-01', '2015-02-18', '2015-05-01', '2015-10-01', '2015-11-11',
+                    '2016-01-01', '2016-02-07', '2016-05-01', '2016-10-01', '2016-11-11',
+                    '2017-01-01', '2017-01-27', '2017-05-01', '2017-10-01', '2017-11-11',
+                    '2018-01-01', '2018-02-15', '2018-05-01', '2018-10-01', '2018-11-11']
+    # standardized_holiday_date = []
+    # for hd in holiday_date:
+    #     standardized_holiday_date.append(str_to_date(hd))
+    standardized_holiday_date = [str_to_date(hd) for hd in holiday_date]
+
     date_count_dict = {}
     standardized_date_list = []
     for dl in datetime_list:
@@ -27,20 +38,30 @@ def __requests_count_everyday(datetime_list, start_date, end_date, lost_date):
         date_count_dict[current_date] = current_count
         current_date = current_date + timedelta(1)
 
+    for current_date in date_count_dict:
+        # 将节假日的数据取两边平均
+        if current_date in standardized_holiday_date:
+            if current_date - timedelta(1) not in date_count_dict:
+                date_count_dict[current_date] = date_count_dict[current_date + timedelta(1)]
+            elif current_date + timedelta(1) not in date_count_dict:
+                date_count_dict[current_date] = date_count_dict[current_date - timedelta(1)]
+            else:
+                date_count_dict[current_date] = (date_count_dict[current_date - timedelta(1)] + date_count_dict[
+                    current_date + timedelta(1)]) / 2
     # print lost_date
     # print date_count_dict[lost_date[0]],date_count_dict[lost_date[1]],date_count_dict[lost_date[2]]
-    alpha = 1.1
-    s1 = date_count_dict[start_date]
-    s_list = {start_date: s1}
-    current_date = start_date + timedelta(1)
-    while current_date <= end_date:
-        if current_date in lost_date:
-            date_count_dict[current_date] = s_list[current_date - timedelta(1)]
-        s = alpha * date_count_dict[current_date] + (1 - alpha) * s_list[current_date - timedelta(1)]
-        s_list[current_date] = int(round(s))
-        if s_list[current_date] < 0:
-            s_list[current_date] = 0
-        current_date = current_date + timedelta(1)
+    # alpha = 1.1
+    # s1 = date_count_dict[start_date]
+    # s_list = {start_date: s1}
+    # current_date = start_date + timedelta(1)
+    # while current_date <= end_date:
+    #     if current_date in lost_date:
+    #         date_count_dict[current_date] = s_list[current_date - timedelta(1)]
+    #     s = alpha * date_count_dict[current_date] + (1 - alpha) * s_list[current_date - timedelta(1)]
+    #     s_list[current_date] = int(round(s))
+    #     if s_list[current_date] < 0:
+    #         s_list[current_date] = 0
+    #     current_date = current_date + timedelta(1)
     # print date_count_dict[lost_date[0]], date_count_dict[lost_date[1]], date_count_dict[lost_date[2]]
     return date_count_dict
 
@@ -121,6 +142,12 @@ def data_process(ecs_lines, input_lines):
 
 
 def data_process_oneday(ecs_lines, input_lines):
+    """
+    统计单天的请求数
+    :param ecs_lines:
+    :param input_lines:
+    :return:
+    """
     itp = InputTxtProcess(input_lines)
     DELTA = itp.delta()  # 预测时间段的天数
     flavor_selected = itp.flavor_selected()  # input.txt中需要预测的flavor
@@ -129,17 +156,46 @@ def data_process_oneday(ecs_lines, input_lines):
     tdtp = TrainDataTxtProcess(ecs_lines)
     start_date = tdtp.start_date()  # 训练集开始日期
     end_date = tdtp.end_date()  # 训练集结束日期
-    flavor_name = tdtp.flavor_name()
-    flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)
+    flavor_name = tdtp.flavor_name()  # 数据集中所有flavor名称
+    flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)  # 数据集中所有flavor对应的日期的二维list,index与flavor_name对应
     lost_date = tdtp.find_lost_date()
+
+    all_date_list = []
+    current = start_date
+    while current <= end_date:
+        all_date_list.append(current)
+        current = current + timedelta(1)
 
     period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
     for fs in flavor_selected:
-        item = __segmentation(fs, flavor_name, flavor_name_datetime, 1, prediction_start_date, start_date, end_date,
-                              lost_date)
-        item.append(fs)
+        datetime_list = flavor_name_datetime[flavor_name.index(fs)]
+        datetime_count_list = __requests_count_everyday(datetime_list, start_date, end_date, lost_date)
+        y_axis = []
+        for adl in all_date_list:
+            y_axis.append(datetime_count_list[adl])
+        item = [all_date_list, y_axis, fs]
         period_data.append(item)
+
     return period_data
+
+
+def data_process_oneday_accumulate(ecs_lines, input_lines):
+    """
+    累加统计每一天的请求数
+    :param ecs_lines:
+    :param input_lines:
+    :return:
+    """
+    period_data = data_process_oneday(ecs_lines, input_lines)
+    period_data_accumulate = []
+    for pr in period_data:
+        datetime_count_list = []
+        for i in range(len(pr[1])):
+            datetime_count_list.append(sum(pr[1][:i + 1]))
+        period_data_accumulate.append([pr[0], datetime_count_list, pr[2]])
+        # print datetime_count_list
+        # print pr[1]
+    return period_data_accumulate
 
 
 def data_compare(flavor_prediction_numbers, input_lines, ecs_lines):

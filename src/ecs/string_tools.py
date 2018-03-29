@@ -9,4 +9,8 @@ def str_to_date(str):
     :return: Date格式日期
     """
     str_array = str.split('-')
-    return date(int(str_array[0]), int(str_array[1]), int(str_array[2]))
+    try:
+        standardized_date = date(int(str_array[0]), int(str_array[1]), int(str_array[2]))
+    except ValueError:
+        print str_array
+    return standardized_date

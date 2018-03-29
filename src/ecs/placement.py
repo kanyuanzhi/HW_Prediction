@@ -36,12 +36,22 @@ def __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_
     for ru in resource_used:
         CPU_used = CPU_used + ru[0]
         MEM_used = MEM_used + ru[1]
-    print "CPU used rate =", round(CPU_used / CPU_total, 4)
-    print "MEM used rate =", round(MEM_used / MEM_total, 4)
-    print resource_used
-    print resource_used_rate
+    # print "CPU used rate =", round(CPU_used / CPU_total, 4)
+    # print "MEM used rate =", round(MEM_used / MEM_total, 4)
+    # print resource_used
+    # print resource_used_rate
 
+    server_numbers_min = max(int(CPU_used / physical_server_CPU) + 1, int(MEM_used / physical_server_MEM) + 1)
+    CPU_used_rate_max = round(CPU_used / (server_numbers_min * physical_server_CPU), 4)
+    MEM_used_rate_max = round(MEM_used / (server_numbers_min * physical_server_MEM), 4)
+    print "CPU当前利用率 =", round(CPU_used / CPU_total, 4)
+    print "CPU最大利用率 =", CPU_used_rate_max
+    print "MEM当前利用率 =", round(MEM_used / MEM_total, 4)
+    print "MEM最大利用率 =", MEM_used_rate_max
+    print "物理服务器当前使用个数 =", server_numbers
+    print "物理服务器最小使用个数 =", server_numbers_min
 
+    return round(CPU_used / CPU_total, 4)
 
 
 def placement(input_lines, flavor_prediction_numbers):
@@ -73,7 +83,7 @@ def placement(input_lines, flavor_prediction_numbers):
         flavor_queue = flavor_queue + [current_flavor_name] * fn
     # print flavor_name
     # print flavor_queue
-    # random.shuffle(flavor_queue)
+    random.shuffle(flavor_queue)
     # print flavor_queue
     # flavor_queue = ['flavor12', 'flavor11', 'flavor9', 'flavor9', 'flavor11', 'flavor9', 'flavor14',
     #                 'flavor14', 'flavor15', 'flavor14', 'flavor11', 'flavor9', 'flavor10', 'flavor13',
@@ -81,16 +91,27 @@ def placement(input_lines, flavor_prediction_numbers):
     # physical_server_cluster1 = placement_algorithm1(flavor_queue, physical_server_CPU, physical_server_MEM,
     #                                                  CPU_dict,
     #                                                  MEM_dict)
-    # physical_server_cluster = placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
-    #                                                  CPU_dict, MEM_dict)
+    physical_server_cluster = placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
+                                                   CPU_dict, MEM_dict)
+    # rate_temp = 0
+    # for i in range(100000):
+    #     random.shuffle(flavor_queue)
+    #     physical_server_cluster = placement_algorithm1(flavor_queue, physical_server_CPU, physical_server_MEM,
+    #                                                     CPU_dict,
+    #                                                     MEM_dict)
+    #     rate = __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU,
+    #                                  physical_server_MEM)
+    #     if rate > rate_temp:
+    #         rate_temp = rate
+    #     print rate_temp
 
-    physical_server_cluster = placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
-                                                     MEM_dict, resource_name)
-    placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource_name,
-                         flavor_name,flavor_prediction_numbers)
+    # physical_server_cluster = placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
+    #                                                  MEM_dict, resource_name)
+    # placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource_name,
+    #                      flavor_name, flavor_prediction_numbers)
 
     # __resource_used_watch(physical_server_cluster1, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
     __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
-    print flavor_prediction_numbers
+    # print flavor_prediction_numbers
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)

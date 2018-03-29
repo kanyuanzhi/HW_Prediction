@@ -78,8 +78,8 @@ def placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
             physical_server_cluster_resource_left.append(
                 [physical_server_CPU - CPU_dict[fq], physical_server_MEM - MEM_dict[fq]])
             physical_server_cluster.append({fq: 1})
-    print physical_server_cluster
-    print physical_server_cluster_resource_left
+    # print physical_server_cluster
+    # print physical_server_cluster_resource_left
     return physical_server_cluster
 
 
@@ -146,8 +146,6 @@ def placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM,
     print "name_numbers:", name_numbers
 
     flavor_name_sort_by_rate = []
-
-
     epoch = len(name_rate)
     while epoch > 0:
         max_value = 0

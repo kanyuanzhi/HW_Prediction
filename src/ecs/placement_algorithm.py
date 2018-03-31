@@ -285,15 +285,24 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
     #             temp = flavor_queue[j]
     #             flavor_queue[j] = current_flavor
     #             flavor_queue[j + 1] = temp
+    dice = []
+    for i in range(len(flavor_queue)):
+        dice.append(i)
 
     while SA_T > SA_T_min:
         flavor_queue_new = flavor_queue[:]
-        index1 = random.randint(0, length - 1)
-        index2 = random.randint(0, length - 1)
-        flavor1 = flavor_queue_new[index1]
-        flavor2 = flavor_queue_new[index2]
-        flavor_queue_new[index1] = flavor2
-        flavor_queue_new[index2] = flavor1
+        random.shuffle(dice)
+        flavor1 = flavor_queue_new[dice[0]]
+        flavor2 = flavor_queue_new[dice[1]]
+        flavor_queue_new[dice[0]] = flavor2
+        flavor_queue_new[dice[1]] = flavor1
+        # index1 = random.randint(0, length - 1)
+        # index2 = random.randint(0, length - 1)
+        # flavor1 = flavor_queue_new[index1]
+        # flavor2 = flavor_queue_new[index2]
+        # flavor_queue_new[index1] = flavor2
+        # flavor_queue_new[index2] = flavor1
+
 
         physical_server = {}
         physical_server_cluster = [physical_server]

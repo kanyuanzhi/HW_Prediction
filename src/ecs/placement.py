@@ -107,11 +107,13 @@ def placement(input_lines, flavor_prediction_numbers):
 
     # physical_server_cluster = placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
     #                                                  MEM_dict, resource_name)
+    # physical_server_cluster = placement_algorithm3_enhance(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
+    #                                                  MEM_dict, resource_name)
     # placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource_name,
     #                      flavor_name, flavor_prediction_numbers)
 
     # __resource_used_watch(physical_server_cluster1, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
-    __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
+    # __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
     # print flavor_prediction_numbers
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)

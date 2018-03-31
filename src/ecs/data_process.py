@@ -2,6 +2,7 @@
 from datetime import timedelta
 from readtxt import InputTxtProcess, TrainDataTxtProcess
 from string_tools import str_to_date
+from gauss_filter import Gauss
 
 
 def __requests_count_everyday(datetime_list, start_date, end_date, lost_date):
@@ -84,35 +85,44 @@ def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
     index = fn.index(flavor)
     datetime_list = fnd[index]  # 该flavor的所有日期数据
     date_count_dict = __requests_count_everyday(datetime_list, sd, ed, ld)  # 统计该flavor每一天的请求量
+    period_count_list = []
+    current_date = sd
+    while current_date <= ed:
+        period_count_list.append(date_count_dict[current_date])
+        current_date = current_date + timedelta(1)
+
+    g = Gauss(period_count_list, 8, 1.5)
+    g.process()
 
     # print datetime_list
     # first_date = str_to_date(datetime_list[0].split(' ')[0])  # 原数据中该flavor最早的日期
-    start_count_date = psd  # 统计时flavor开始的日期
-    # print first_date
-    # print psd
-    while start_count_date > sd:
+    start_count_date = ed  # 统计时flavor开始的日期
+    while start_count_date >= sd:
         start_count_date = start_count_date - timedelta(d)
-        x_axis.append(
-            start_count_date.strftime("%Y-%m-%d") + " to " + (start_count_date + timedelta(d - 1)).strftime("%Y-%m-%d"))
-    start_count_date = start_count_date + timedelta(d)
+        x_axis.append(start_count_date + timedelta(1))
     x_axis.reverse()
     del x_axis[0]
 
-    left_date = start_count_date
-    right_date = left_date + timedelta(d)
-    while right_date <= psd:
-        count = 0
-        current_date = left_date
-        while current_date < right_date:
-            count = count + date_count_dict[current_date]
-            current_date = current_date + timedelta(1)
-        # for dl in datetime_list:
-        #     current_date = str_to_date(dl.split(' ')[0])
-        #     if left_date <= current_date < right_date:
-        #         count = count + 1
-        y_axis.append(count)
-        left_date = right_date
-        right_date = left_date + timedelta(d)
+    period_numbers = int(len(period_count_list) / d)
+    start_count_index = len(period_count_list) - period_numbers * d
+    for i in range(period_numbers):
+        y_axis.append(sum(period_count_list[start_count_index + i * d:start_count_index + (i + 1) * d]))
+
+    # left_date = start_count_date
+    # right_date = left_date + timedelta(d)
+    # while right_date <= psd:
+    #     count = 0
+    #     current_date = left_date
+    #     while current_date < right_date:
+    #         count = count + date_count_dict[current_date]
+    #         current_date = current_date + timedelta(1)
+    #     # for dl in datetime_list:
+    #     #     current_date = str_to_date(dl.split(' ')[0])
+    #     #     if left_date <= current_date < right_date:
+    #     #         count = count + 1
+    #     y_axis.append(count)
+    #     left_date = right_date
+    #     right_date = left_date + timedelta(d)
 
     result = [x_axis, y_axis]
     return result
@@ -169,10 +179,12 @@ def data_process_oneday(ecs_lines, input_lines):
     period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
     for fs in flavor_selected:
         datetime_list = flavor_name_datetime[flavor_name.index(fs)]
-        datetime_count_list = __requests_count_everyday(datetime_list, start_date, end_date, lost_date)
+        datetime_count_dict = __requests_count_everyday(datetime_list, start_date, end_date, lost_date)
         y_axis = []
         for adl in all_date_list:
-            y_axis.append(datetime_count_list[adl])
+            y_axis.append(datetime_count_dict[adl])
+        g = Gauss(y_axis, 5, 1.5)
+        g.process()
         item = [all_date_list, y_axis, fs]
         period_data.append(item)
 

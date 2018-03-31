@@ -124,6 +124,64 @@ def placement_algorithm3(flavor_queue, physical_server_CPU, physical_server_MEM,
     return physical_server_cluster
 
 
+def placement_algorithm3_enhance(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource):
+    """
+    :param flavor_queue:
+    :param physical_server_CPU:
+    :param physical_server_MEM:
+    :param CPU_dict:
+    :param MEM_dict:
+    :param resource :优化目标资源CPU或MEM
+    :return:
+    """
+    physical_server = {}
+    physical_server_cluster = [physical_server]
+    residual_CPU = physical_server_CPU
+    residual_MEM = physical_server_MEM
+    resource_dict = {"CPU": CPU_dict, "MEM": MEM_dict}[resource]
+    physical_server_cluster_resource_left = [[physical_server_CPU, physical_server_MEM]]  # 集群中各服务器资源剩余情况
+    for i in range(1, len(flavor_queue)):
+        current_flavor = flavor_queue[i]
+        for j in range(i)[::-1]:
+            if resource_dict[current_flavor] > resource_dict[flavor_queue[j]]:
+                temp = flavor_queue[j]
+                flavor_queue[j] = current_flavor
+                flavor_queue[j + 1] = temp
+    for fq in flavor_queue:
+        flag = False
+        for index, resource_left in enumerate(physical_server_cluster_resource_left):
+            if CPU_dict[fq] <= resource_left[0] and MEM_dict[fq] <= resource_left[1]:
+                physical_server_cluster_resource_left[index][0] = physical_server_cluster_resource_left[index][0] - \
+                                                                  CPU_dict[fq]
+                physical_server_cluster_resource_left[index][1] = physical_server_cluster_resource_left[index][1] - \
+                                                                  MEM_dict[fq]
+                flag = True
+                if fq in physical_server_cluster[index]:
+                    physical_server_cluster[index][fq] = physical_server_cluster[index][fq] + 1
+                else:
+                    physical_server_cluster[index][fq] = 1
+                break
+        if not flag:
+            physical_server_cluster_resource_left.append(
+                [physical_server_CPU - CPU_dict[fq], physical_server_MEM - MEM_dict[fq]])
+            physical_server_cluster.append({fq: 1})
+
+    #     if CPU_dict[fq] <= residual_CPU and MEM_dict[fq] <= residual_MEM:
+    #         residual_CPU = residual_CPU - CPU_dict[fq]
+    #         residual_MEM = residual_MEM - MEM_dict[fq]
+    #         if fq in physical_server:
+    #             physical_server[fq] = physical_server[fq] + 1
+    #         else:
+    #             physical_server[fq] = 1
+    #     else:
+    #         physical_server_cluster.append(physical_server)
+    #         physical_server = {}
+    #         physical_server[fq] = 1
+    #         residual_CPU = physical_server_CPU - CPU_dict[fq]
+    #         residual_MEM = physical_server_MEM - MEM_dict[fq]
+    # physical_server_cluster.append(physical_server)
+    return physical_server_cluster
+
 def placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource,
                          flavor_name, flavor_prediction_numbers):
     """

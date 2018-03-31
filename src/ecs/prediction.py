@@ -56,16 +56,16 @@ def __onetime_exponential_smoothing_enhanced(prediction_numbers):
 def prediction(ecs_lines, input_lines):
     # itp = InputTxtProcess(input_lines)
     # delta = itp.delta()  # 预测时间段的天数
-    period_data_oneday = data_process_oneday(ecs_lines, input_lines)  # 不切分，按天输出
+    # period_data_oneday = data_process_oneday(ecs_lines, input_lines)  # 不切分，按天输出
 
     period_data = data_process(ecs_lines, input_lines)
     flavor_prediction_numbers = []
     # example ######
-    for ps in period_data:
-        flavor_prediction_numbers.append(__average(ps[1], 1))
-    ###########################
     # for ps in period_data:
-    #     flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
+    #     flavor_prediction_numbers.append(__average(ps[1], 1))
+    ###########################
+    for ps in period_data:
+        flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
 
     # for ps in period_data:
     #     flavor_prediction_numbers.append(bp_network(ps[1], len(period_data[0][1]) / 2 + 2, ps[2]))
@@ -109,11 +109,11 @@ def prediction(ecs_lines, input_lines):
     # print ps[1]
 
     # period_data_accumulate = data_process_oneday_accumulate(ecs_lines, input_lines)
-    # # xs = period_data_oneday[0][0]
+    # #xs = period_data_oneday[0][0]
     # xs = period_data_accumulate[0][0]
     # plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
     # plt.gca().xaxis.set_major_locator(mdates.DayLocator())
-    # # for i, ps in enumerate(period_data_oneday):
+    # #for i, ps in enumerate(period_data_oneday):
     # for i, ps in enumerate(period_data_accumulate):
     #     plt.plot(xs, ps[1], label=ps[2], linestyle="-")
     # plt.gcf().autofmt_xdate()
@@ -122,6 +122,6 @@ def prediction(ecs_lines, input_lines):
     # plt.show()
     # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 
-    # data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
+    #data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
 
     return flavor_prediction_numbers

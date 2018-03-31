@@ -91,8 +91,12 @@ def placement(input_lines, flavor_prediction_numbers):
     # physical_server_cluster1 = placement_algorithm1(flavor_queue, physical_server_CPU, physical_server_MEM,
     #                                                  CPU_dict,
     #                                                  MEM_dict)
-    physical_server_cluster = placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
-                                                   CPU_dict, MEM_dict)
+    # physical_server_cluster1 = placement_algorithm2(flavor_queue, physical_server_CPU, physical_server_MEM,
+    #                                                CPU_dict, MEM_dict)
+    #
+    # print len(physical_server_cluster1)
+    physical_server_cluster = placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
+                                                     MEM_dict, resource_name)
     # rate_temp = 0
     # for i in range(100000):
     #     random.shuffle(flavor_queue)

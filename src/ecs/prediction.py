@@ -4,17 +4,21 @@ from readtxt import InputTxtProcess
 from adaline import adaline
 from bp_network import bp_network
 
-import pandas as pd
-# # import statsmodels.api as sm
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import matplotlib as mpl
+# import pandas as pd
+# # # import statsmodels.api as sm
+# import matplotlib.dates as mdates
+# import matplotlib.pyplot as plt
+# import matplotlib as mpl
 
 
 def __your_prediction(prediction_numbers):
     num = 0
     # 根据prediction_numbers预测该flavor在下一阶段的数量num
     return num
+
+
+def __last_period(prediction_numbers):
+    return int(prediction_numbers[len(prediction_numbers) - 1])
 
 
 def __average(prediction_numbers, period):
@@ -66,6 +70,9 @@ def prediction(ecs_lines, input_lines):
     ###########################
     for ps in period_data:
         flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
+
+    # for ps in period_data:
+    #     flavor_prediction_numbers.append(__last_period(ps[1]))
 
     # for ps in period_data:
     #     flavor_prediction_numbers.append(bp_network(ps[1], len(period_data[0][1]) / 2 + 2, ps[2]))
@@ -122,6 +129,6 @@ def prediction(ecs_lines, input_lines):
     # plt.show()
     # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 
-    #data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
+    # data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
 
     return flavor_prediction_numbers

@@ -91,17 +91,20 @@ def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
         period_count_list.append(date_count_dict[current_date])
         current_date = current_date + timedelta(1)
 
-    g = Gauss(period_count_list, 8, 1.5)
+    g = Gauss(period_count_list, 4, 2.0)
     g.process()
 
     # print datetime_list
     # first_date = str_to_date(datetime_list[0].split(' ')[0])  # 原数据中该flavor最早的日期
-    start_count_date = ed  # 统计时flavor开始的日期
-    while start_count_date >= sd:
+    start_count_date = ed + timedelta(1)  # 统计时flavor开始的日期
+    while True:
         start_count_date = start_count_date - timedelta(d)
-        x_axis.append(start_count_date + timedelta(1))
+        if start_count_date < sd:
+            break
+        x_axis.append(start_count_date)
+
     x_axis.reverse()
-    del x_axis[0]
+    # del x_axis[0]
 
     period_numbers = int(len(period_count_list) / d)
     start_count_index = len(period_count_list) - period_numbers * d
@@ -170,22 +173,11 @@ def data_process_oneday(ecs_lines, input_lines):
     flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)  # 数据集中所有flavor对应的日期的二维list,index与flavor_name对应
     lost_date = tdtp.find_lost_date()
 
-    all_date_list = []
-    current = start_date
-    while current <= end_date:
-        all_date_list.append(current)
-        current = current + timedelta(1)
-
     period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
     for fs in flavor_selected:
-        datetime_list = flavor_name_datetime[flavor_name.index(fs)]
-        datetime_count_dict = __requests_count_everyday(datetime_list, start_date, end_date, lost_date)
-        y_axis = []
-        for adl in all_date_list:
-            y_axis.append(datetime_count_dict[adl])
-        g = Gauss(y_axis, 5, 1.5)
-        g.process()
-        item = [all_date_list, y_axis, fs]
+        item = __segmentation(fs, flavor_name, flavor_name_datetime, 1, prediction_start_date, start_date, end_date,
+                              lost_date)
+        item.append(fs)
         period_data.append(item)
 
     return period_data

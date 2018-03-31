@@ -4,11 +4,11 @@ from readtxt import InputTxtProcess
 from adaline import adaline
 from bp_network import bp_network
 
-# import pandas as pd
-# # # import statsmodels.api as sm
-# import matplotlib.dates as mdates
-# import matplotlib.pyplot as plt
-# import matplotlib as mpl
+import pandas as pd
+# # import statsmodels.api as sm
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 
 def __your_prediction(prediction_numbers):
@@ -79,26 +79,26 @@ def prediction(ecs_lines, input_lines):
 
 
     # plt.figure(0)
-    # for i, ps in enumerate(period_data_oneday):
+    # for i, ps in enumerate(period_data):
     #     #flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
     #     dta = pd.Series(ps[1])
     #     diff1 = dta.diff(1)
     #     diff2 = dta.diff(2)
-    #     ax = plt.subplot(len(period_data_oneday) / 2 + 1, 2, i + 1)
+    #     ax = plt.subplot(len(period_data) / 2 + 1, 2, i + 1)
     #     plt.plot(dta)
     #     plt.sca(ax)
     # plt.figure(1)
-    # for i, ps in enumerate(period_data_oneday):
+    # for i, ps in enumerate(period_data):
     #     dta = pd.Series(ps[1])
     #     diff1 = dta.diff(1)
-    #     ax = plt.subplot(len(period_data_oneday) / 2 + 1, 2, i + 1)
+    #     ax = plt.subplot(len(period_data) / 2 + 1, 2, i + 1)
     #     plt.plot(diff1)
     #     plt.sca(ax)
     # plt.figure(2)
-    # for i, ps in enumerate(period_data_oneday):
+    # for i, ps in enumerate(period_data):
     #     dta = pd.Series(ps[1])
     #     diff2 = dta.diff(2)
-    #     ax = plt.subplot(len(period_data_oneday) / 2 + 1, 2, i + 1)
+    #     ax = plt.subplot(len(period_data) / 2 + 1, 2, i + 1)
     #     plt.plot(diff2)
     #     plt.sca(ax)
     # plt.show()

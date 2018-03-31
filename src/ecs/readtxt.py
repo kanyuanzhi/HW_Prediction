@@ -3,12 +3,10 @@ from string_tools import str_to_date
 from datetime import timedelta
 
 
-class InputTxtProcess():
+class InputTxtProcess:
     """
     处理input.txt文件
     """
-    __input_lines = []
-
     def __init__(self, input_lines):
         self.__input_lines = input_lines
 
@@ -61,12 +59,10 @@ class InputTxtProcess():
         return self.__input_lines[-4:-3][0][0:3]
 
 
-class TrainDataTxtProcess():
+class TrainDataTxtProcess:
     """
     处理TrainData.txt文件
     """
-    __data_matrix = []
-
     def __init__(self, ecs_lines):
         self.__data_matrix = []
         for d in ecs_lines:

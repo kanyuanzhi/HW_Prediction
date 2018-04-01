@@ -334,6 +334,10 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
         target_resource_index = {"CPU": 0, "MEM": 1}[resource]
         last_rate = physical_server_cluster_resource_left[physical_server_numbers][target_resource_index] / float(
             target_resource)
+
+        # mark = 1
+        # for resource_left in physical_server_cluster_resource_left:
+        #     mark = mark*(1-resource_left[target_resource_index]/float(target_resource))
         mark = physical_server_numbers + last_rate
         mark_temp = mark
         if mark_temp < mark_temp_min:
@@ -361,4 +365,5 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
     # print physical_server_cluster_resource_left
     print mark_temp_min
     # print physical_server_cluster_final
+    print len(physical_server_cluster_final2)
     return physical_server_cluster_final2

@@ -349,14 +349,14 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
         #     print len(physical_server_cluster_final)
         #     break
         if mark < mark_min:
-            #physical_server_cluster_final = physical_server_cluster
+            # physical_server_cluster_final = physical_server_cluster
             mark_min = mark
             flavor_queue = flavor_queue_new
         else:
             # p = 1 / (1 + math.exp(-(mark - mark_min) / SA_T))
             p = math.exp((mark_min - mark) / SA_T)
             if random.random() > p:
-                #physical_server_cluster_final = physical_server_cluster
+                # physical_server_cluster_final = physical_server_cluster
                 mark_min = mark
                 flavor_queue = flavor_queue_new
         print mark_min
@@ -365,5 +365,4 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
     # print physical_server_cluster_resource_left
     print mark_temp_min
     # print physical_server_cluster_final
-    print len(physical_server_cluster_final2)
     return physical_server_cluster_final2

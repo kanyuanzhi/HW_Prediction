@@ -19,6 +19,10 @@ def __your_prediction(prediction_numbers):
     return num
 
 
+def __last_period(prediction_numbers):
+    return int(prediction_numbers[len(prediction_numbers) - 1])
+
+
 def __average(prediction_numbers, period):
     prediction_list = prediction_numbers[-period:]
     return int(sum(prediction_list) / period)
@@ -42,6 +46,9 @@ def prediction(ecs_lines, input_lines):
     #     flavor_prediction_numbers.append(twotimes_exponential_smoothing(ps[1], ps[0], DELTA))
 
     # for ps in period_data:
+    #     flavor_prediction_numbers.append(__last_period(ps[1]))
+
+    # for ps in period_data:
     #     flavor_prediction_numbers.append(bp_network(ps[1], len(period_data[0][1]) / 2 + 2, ps[2]))
 
     # bp_network(period_data[7][1],len(period_data[0][1]) / 2 + 2)
@@ -53,24 +60,26 @@ def prediction(ecs_lines, input_lines):
 
 
     # plt.figure(0)
-    # for i, ps in enumerate(period_data_oneday):
-    #     #flavor_prediction_numbers.append(onetime_exponential_smoothing(ps[1]))
+    # for i, ps in enumerate(period_data):
+    #     #flavor_prediction_numbers.append(__onetime_exponential_smoothing(ps[1]))
     #     dta = pd.Series(ps[1])
-    #     ax = plt.subplot(len(period_data_oneday) / 2 + 1, 2, i + 1)
+    #     diff1 = dta.diff(1)
+    #     diff2 = dta.diff(2)
+    #     ax = plt.subplot(len(period_data) / 2 + 1, 2, i + 1)
     #     plt.plot(dta)
     #     plt.sca(ax)
     # plt.figure(1)
-    # for i, ps in enumerate(period_data_oneday):
+    # for i, ps in enumerate(period_data):
     #     dta = pd.Series(ps[1])
     #     diff1 = dta.diff(1)
-    #     ax = plt.subplot(len(period_data_oneday) / 2 + 1, 2, i + 1)
+    #     ax = plt.subplot(len(period_data) / 2 + 1, 2, i + 1)
     #     plt.plot(diff1)
     #     plt.sca(ax)
     # plt.figure(2)
-    # for i, ps in enumerate(period_data_oneday):
+    # for i, ps in enumerate(period_data):
     #     dta = pd.Series(ps[1])
     #     diff2 = dta.diff(2)
-    #     ax = plt.subplot(len(period_data_oneday) / 2 + 1, 2, i + 1)
+    #     ax = plt.subplot(len(period_data) / 2 + 1, 2, i + 1)
     #     plt.plot(diff2)
     #     plt.sca(ax)
     # plt.show()
@@ -94,6 +103,6 @@ def prediction(ecs_lines, input_lines):
     # plt.show()
     # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 
-    #data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
+    # data_compare(flavor_prediction_numbers, input_lines, ecs_lines)
 
     return flavor_prediction_numbers

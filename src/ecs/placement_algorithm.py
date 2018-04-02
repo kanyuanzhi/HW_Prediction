@@ -382,7 +382,7 @@ def placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physic
     :param flavor_prediction_numbers:
     :return:
     """
-    SA_T = 1000
+    SA_T = 100
     SA_T_min = 1
     r = 0.9999
     length = len(flavor_queue)
@@ -447,12 +447,11 @@ def placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physic
                 flag = False
                 for index, resource_left in enumerate(physical_server_cluster_resource_left):
                     if CPU_dict[fq] <= resource_left[0] and MEM_dict[fq] <= resource_left[1]:
-                        target_resource_left = resource_left[0] - CPU_dict[fq]
-                        opposite_resource_left = resource_left[1] - MEM_dict[fq]
-                        if opposite_resource_left == 0 and target_resource_left != 0:
+                        cpu_resource_left = resource_left[0] - CPU_dict[fq]
+                        mem_resource_left = resource_left[1] - MEM_dict[fq]
+                        if mem_resource_left == 0 and cpu_resource_left != 0:
                             break
-                        if opposite_resource_left != 0 and target_resource_left / float(
-                                opposite_resource_left) > max_cpu_mem_all:
+                        if mem_resource_left != 0 and cpu_resource_left / float(mem_resource_left) > max_cpu_mem_all:
                             break
 
                         physical_server_cluster_resource_left[index][0] = physical_server_cluster_resource_left[index][
@@ -518,6 +517,50 @@ def placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physic
                             physical_server_cluster_resource_left_final[index][1] - (i - 1) * special_mem
                         special_add_counts.append([index, i - 1, apecial_flavor])
                         break
+        print mark_temp_min
+        print add_flavor
+        print physical_server_cluster_resource_left_final
+        print special_add_counts
+        print physical_server_cluster_final
+        count = 0
+        flavor_prediction_numbers_add = {}
+        for sad in special_add_counts:
+            if sad[1] != 0:
+                count = count + sad[1]
+                if sad[2] in flavor_prediction_numbers_add:
+                    flavor_prediction_numbers_add[sad[2]] = flavor_prediction_numbers_add[sad[2]] + sad[1]
+                else:
+                    flavor_prediction_numbers_add[sad[2]] = sad[1]
+                if sad[2] in physical_server_cluster_final[sad[0]]:
+                    physical_server_cluster_final[sad[0]][sad[2]] = physical_server_cluster_final[sad[0]][sad[2]] + sad[
+                        1]
+                else:
+                    physical_server_cluster_final[sad[0]][sad[2]] = sad[1]
+        print count
+        print flavor_prediction_numbers_add
+        flavor_prediction_numbers_new = flavor_prediction_numbers[:]
+        for key in flavor_prediction_numbers_add:
+            index = flavor_name.index(key)
+            flavor_prediction_numbers_new[index] = flavor_prediction_numbers_new[index] + flavor_prediction_numbers_add[
+                key]
+
+        # for pscl in physical_server_cluster_final:
+        print flavor_prediction_numbers
+        print flavor_prediction_numbers_new
+        print physical_server_cluster_final
+
+        result = []
+        for pscf in physical_server_cluster_final:
+            physical_server = pscf.items()
+            cpu = 0
+            mem = 0
+            for ps in physical_server:
+                cpu = cpu + CPU_dict[ps[0]] * ps[1]
+                mem = mem + MEM_dict[ps[0]] * ps[1]
+            result.append([56 - cpu, 128 - mem])
+        print result
+
+        return [physical_server_cluster_final, flavor_prediction_numbers_new]
     else:
         add_flavor = []
         for fi in flavor_information:
@@ -545,10 +588,10 @@ def placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physic
                     if CPU_dict[fq] <= resource_left[0] and MEM_dict[fq] <= resource_left[1]:
                         mem_resource_left = resource_left[1] - MEM_dict[fq]
                         cpu_resource_left = resource_left[0] - CPU_dict[fq]
-                        if cpu_resource_left == 0 and mem_resource_left != 0:
-                            break
-                        if cpu_resource_left != 0 and mem_resource_left / float(cpu_resource_left) > max_mem_cpu_all:
-                            break
+                        # if cpu_resource_left == 0 and mem_resource_left != 0:
+                        #     break
+                        # if cpu_resource_left != 0 and mem_resource_left / float(cpu_resource_left) > max_mem_cpu_all:
+                        #     break
 
                         physical_server_cluster_resource_left[index][0] = physical_server_cluster_resource_left[index][
                                                                               0] - CPU_dict[fq]
@@ -591,62 +634,23 @@ def placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physic
             print mark_min
             print round(SA_T, 1)
             SA_T = SA_T * r
+        return [physical_server_cluster_final, flavor_prediction_numbers]
         # print physical_server_cluster_resource_left
-        print physical_server_cluster_resource_left_final
-        special_add_counts = []
-        for af in add_flavor:
-            apecial_flavor = af["name"]
-            special_cpu = af["cpu"]
-            special_mem = af["mem"]
-            for index, resource_left in enumerate(physical_server_cluster_resource_left_final):
-                for i in range(1, 100):
-                    if i * special_mem > resource_left[1] and (i - 1) * special_cpu < resource_left[0]:
-                        physical_server_cluster_resource_left_final[index][1] = \
-                            physical_server_cluster_resource_left_final[index][1] - (i - 1) * special_mem
-                        physical_server_cluster_resource_left_final[index][0] = \
-                            physical_server_cluster_resource_left_final[index][0] - (i - 1) * special_cpu
-                        special_add_counts.append([index, i - 1, apecial_flavor])
-                        break
+        # print physical_server_cluster_resource_left_final
+        # special_add_counts = []
+        # for af in add_flavor:
+        #     apecial_flavor = af["name"]
+        #     special_cpu = af["cpu"]
+        #     special_mem = af["mem"]
+        #     for index, resource_left in enumerate(physical_server_cluster_resource_left_final):
+        #         for i in range(1, 100):
+        #             # if i * special_mem > resource_left[1] and (i - 1) * special_cpu < resource_left[0]:
+        #             if i * special_mem > resource_left[1]:
+        #                 physical_server_cluster_resource_left_final[index][1] = \
+        #                     physical_server_cluster_resource_left_final[index][1] - (i - 1) * special_mem
+        #                 physical_server_cluster_resource_left_final[index][0] = \
+        #                     physical_server_cluster_resource_left_final[index][0] - (i - 1) * special_cpu
+        #                 special_add_counts.append([index, i - 1, apecial_flavor])
+        #                 break
 
-    print mark_temp_min
-    print add_flavor
-    print physical_server_cluster_resource_left_final
-    print special_add_counts
-    print physical_server_cluster_final
-    count = 0
-    flavor_prediction_numbers_add = {}
-    for sad in special_add_counts:
-        if sad[1] != 0:
-            count = count + sad[1]
-            if sad[2] in flavor_prediction_numbers_add:
-                flavor_prediction_numbers_add[sad[2]] = flavor_prediction_numbers_add[sad[2]] + sad[1]
-            else:
-                flavor_prediction_numbers_add[sad[2]] = sad[1]
-            if sad[2] in physical_server_cluster_final[sad[0]]:
-                physical_server_cluster_final[sad[0]][sad[2]] = physical_server_cluster_final[sad[0]][sad[2]] + sad[1]
-            else:
-                physical_server_cluster_final[sad[0]][sad[2]] = sad[1]
-    print count
-    print flavor_prediction_numbers_add
-    flavor_prediction_numbers_new = flavor_prediction_numbers[:]
-    for key in flavor_prediction_numbers_add:
-        index = flavor_name.index(key)
-        flavor_prediction_numbers_new[index] = flavor_prediction_numbers_new[index] + flavor_prediction_numbers_add[key]
 
-    # for pscl in physical_server_cluster_final:
-    print flavor_prediction_numbers
-    print flavor_prediction_numbers_new
-    print physical_server_cluster_final
-
-    result = []
-    for pscf in physical_server_cluster_final:
-        physical_server = pscf.items()
-        cpu = 0
-        mem = 0
-        for ps in physical_server:
-            cpu = cpu + CPU_dict[ps[0]] * ps[1]
-            mem = mem + MEM_dict[ps[0]] * ps[1]
-        result.append([56 - cpu, 128 - mem])
-    print result
-
-    return [physical_server_cluster_final, flavor_prediction_numbers_new]

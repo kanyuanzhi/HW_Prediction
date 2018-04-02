@@ -7,7 +7,6 @@ flavor5 2 4096
 flavor6 2 8192
 flavor7 4 4096
 flavor15 16 65536
-
 MEM
 
 2015-05-12 00:00:00

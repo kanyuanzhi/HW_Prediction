@@ -3,6 +3,7 @@ from readtxt import InputTxtProcess
 from writetxt import generate_output
 from placement_algorithm import *
 import random
+import math
 
 
 def __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM):
@@ -41,7 +42,7 @@ def __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_
     # print resource_used
     # print resource_used_rate
 
-    server_numbers_min = max(int(CPU_used / physical_server_CPU) + 1, int(MEM_used / physical_server_MEM) + 1)
+    server_numbers_min = max(math.ceil(CPU_used / physical_server_CPU), math.ceil(MEM_used / physical_server_MEM))
     CPU_used_rate_max = round(CPU_used / (server_numbers_min * physical_server_CPU), 4)
     MEM_used_rate_max = round(MEM_used / (server_numbers_min * physical_server_MEM), 4)
     print "CPU当前利用率 =", round(CPU_used / CPU_total, 4)
@@ -58,6 +59,7 @@ def placement(input_lines, flavor_prediction_numbers):
     itp = InputTxtProcess(input_lines)
     resource_name = itp.resource_name()
     physical_server_specification = itp.physical_server_specification()
+    flavor_selected = itp.flavor_selected()
     flavor_specification = itp.flavor_specification()
 
     physical_server_CPU = int(physical_server_specification[0])  # 物理服务器CPU数量
@@ -95,8 +97,16 @@ def placement(input_lines, flavor_prediction_numbers):
     #                                                CPU_dict, MEM_dict)
     #
     # print len(physical_server_cluster1)
-    physical_server_cluster = placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
-                                                     MEM_dict, resource_name)
+    # physical_server_cluster = placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
+    #                                                  MEM_dict, resource_name)
+    result = placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physical_server_MEM,
+                                                                 CPU_dict, MEM_dict, resource_name, flavor_name,
+                                                                 flavor_prediction_numbers)
+
+    physical_server_cluster = result[0]
+    print physical_server_cluster
+    flavor_prediction_numbers = result[1]
+    print flavor_prediction_numbers
     # rate_temp = 0
     # for i in range(100000):
     #     random.shuffle(flavor_queue)
@@ -113,8 +123,8 @@ def placement(input_lines, flavor_prediction_numbers):
     #                                                  MEM_dict, resource_name)
     # physical_server_cluster = placement_algorithm3_enhance(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
     #                                                  MEM_dict, resource_name)
-    placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource_name,
-                         flavor_name, flavor_prediction_numbers)
+    # placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource_name,
+    #                     flavor_name, flavor_prediction_numbers)
 
     # __resource_used_watch(physical_server_cluster1, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
     __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)

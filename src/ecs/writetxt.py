@@ -13,8 +13,8 @@ def generate_output(flavor_name, flavor_prediction_numbers, physical_server_clus
     output_str.append('')
     output_str.append(str(len(physical_server_cluster)))
 
-    for psc in physical_server_cluster:
-        psc_str = str(physical_server_cluster.index(psc) + 1)
+    for index,psc in enumerate(physical_server_cluster):
+        psc_str = str(index + 1)
         physical_server = psc.items()
         for ps in physical_server:
             psc_str = psc_str + ' ' + ps[0] + ' ' + str(ps[1])

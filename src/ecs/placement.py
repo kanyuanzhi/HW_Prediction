@@ -102,9 +102,9 @@ def placement(input_lines, flavor_prediction_numbers):
     # result = placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physical_server_MEM,
     #                                             CPU_dict, MEM_dict, resource_name, flavor_name,
     #                                             flavor_prediction_numbers)
-    result = placement_algorithm_SA_super_enhancement(flavor_queue, physical_server_CPU, physical_server_MEM,
-                                                CPU_dict, MEM_dict, resource_name, flavor_name,
-                                                flavor_prediction_numbers)
+    result = placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_CPU, physical_server_MEM,
+                                                      CPU_dict, MEM_dict, resource_name, flavor_name,
+                                                      flavor_prediction_numbers)
     physical_server_cluster = result[0]
     print physical_server_cluster
     flavor_prediction_numbers = result[1]

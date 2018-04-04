@@ -1,11 +1,13 @@
 56 128 1200
 
 15
+
 flavor1 1 1024
-flavor7 4 4096
+flavor2 1 2048
 flavor4 2 2048
+flavor5 2 4096
 flavor10 8 8192
-flavor13 16 16384
+flavor14 16 32768
 
 MEM
 

@@ -256,7 +256,7 @@ def placement_algorithm4(flavor_queue, physical_server_CPU, physical_server_MEM,
 
 
 def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict,
-                                            resource):
+                           resource):
     """
     Simulated Annealing模拟退火
     :param flavor_queue:
@@ -656,7 +656,7 @@ def placement_algorithm_SA_enhancement(flavor_queue, physical_server_CPU, physic
 
 
 def placement_algorithm_SA_super_enhancement(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict,
-                                        resource, flavor_name, flavor_prediction_numbers):
+                                             resource, flavor_name, flavor_prediction_numbers):
     """
     Simulated Annealing模拟退火增强版
     :param flavor_queue:
@@ -974,8 +974,9 @@ def placement_algorithm_SA_super_enhancement(flavor_queue, physical_server_CPU, 
         return [physical_server_cluster_final, flavor_prediction_numbers_new]
 
 
-def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict,
-                                        resource, flavor_name, flavor_prediction_numbers):
+def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict,
+                                                  MEM_dict,
+                                                  resource, flavor_name, flavor_prediction_numbers):
     """
     Simulated Annealing模拟退火增强版
     :param flavor_queue:
@@ -1015,6 +1016,7 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
 
     max_cpu_mem_all = max(flavor_information, key=lambda x: x['cpu_mem'])['cpu_mem']
     max_mem_cpu_all = max(flavor_information, key=lambda x: x['mem_cpu'])['mem_cpu']
+    min_mem_cpu_all = min(flavor_information, key=lambda x: x['mem_cpu'])['mem_cpu']
     # max_cpu_mem = max(backup_flavor, key=lambda x: x['cpu_mem'])['cpu_mem']
     # min_cpu_mem = min(backup_flavor, key=lambda x: x['cpu_mem'])['cpu_mem']
     # max_mem_cpu = max(backup_flavor, key=lambda x: x['mem_cpu'])['mem_cpu']
@@ -1143,24 +1145,38 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
             flavor_prediction_numbers_new[index] = flavor_prediction_numbers_new[index] + flavor_prediction_numbers_add[
                 key]
 
-        # for pscl in physical_server_cluster_final:
         print flavor_prediction_numbers
         print flavor_prediction_numbers_new
         print physical_server_cluster_final
 
-        result = []
-        for pscf in physical_server_cluster_final:
-            physical_server = pscf.items()
-            cpu = 0
-            mem = 0
-            for ps in physical_server:
-                cpu = cpu + CPU_dict[ps[0]] * ps[1]
-                mem = mem + MEM_dict[ps[0]] * ps[1]
-            result.append([56 - cpu, 128 - mem])
-        print result
-
         return [physical_server_cluster_final, flavor_prediction_numbers_new]
     else:
+        print flavor_prediction_numbers
+        for fi in flavor_information:
+            """
+            我也不知道为啥这样调整后分数上去了！
+            """
+            if abs(fi['mem_cpu'] - 1.0) < 0.00001:
+                fi['numbers'] = int(fi['numbers'] * 1.1)
+            if abs(fi['mem_cpu'] - 2.0) < 0.00001:
+                fi['numbers'] = int(fi['numbers'] * 0.9)
+            # if abs(fi['mem_cpu'] == 4.0) < 0.00001:
+            #     fi['numbers'] = int(fi['numbers'] * 1.1)
+
+        for fi in flavor_information:
+            index = flavor_name.index(fi['name'])
+            flavor_prediction_numbers[index] = flavor_prediction_numbers[index] = fi['numbers']
+
+        flavor_queue = []
+        for i, fn in enumerate(flavor_prediction_numbers):
+            current_flavor_name = flavor_name[i]
+            flavor_queue = flavor_queue + [current_flavor_name] * fn
+        random.shuffle(flavor_queue)
+
+        dice = []
+        for i in range(len(flavor_queue)):
+            dice.append(i)
+
         add_flavor = []
         for fi in flavor_information:
             if fi['mem_cpu'] == max_mem_cpu_all:
@@ -1192,10 +1208,12 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
                         # if cpu_resource_left != 0 and mem_resource_left / float(cpu_resource_left) > 20:
                         #     break
 
-                        physical_server_cluster_resource_left[index][0] = physical_server_cluster_resource_left[index][
-                                                                              0] - CPU_dict[fq]
-                        physical_server_cluster_resource_left[index][1] = physical_server_cluster_resource_left[index][
-                                                                              1] - MEM_dict[fq]
+                        physical_server_cluster_resource_left[index][0] = \
+                            physical_server_cluster_resource_left[index][
+                                0] - CPU_dict[fq]
+                        physical_server_cluster_resource_left[index][1] = \
+                            physical_server_cluster_resource_left[index][
+                                1] - MEM_dict[fq]
                         flag = True
                         if fq in physical_server_cluster[index]:
                             physical_server_cluster[index][fq] = physical_server_cluster[index][fq] + 1
@@ -1210,7 +1228,8 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
             physical_server_numbers = len(physical_server_cluster_resource_left) - 1
             target_resource = {"CPU": physical_server_CPU, "MEM": physical_server_MEM}[resource]
             target_resource_index = {"CPU": 0, "MEM": 1}[resource]
-            last_rate = physical_server_cluster_resource_left[physical_server_numbers][1] / float(physical_server_MEM)
+            last_rate = physical_server_cluster_resource_left[physical_server_numbers][1] / float(
+                physical_server_MEM)
 
             mark = physical_server_numbers + last_rate
             mark_temp = mark
@@ -1262,8 +1281,8 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
                 else:
                     flavor_prediction_numbers_add[sad[2]] = sad[1]
                 if sad[2] in physical_server_cluster_final[sad[0]]:
-                    physical_server_cluster_final[sad[0]][sad[2]] = physical_server_cluster_final[sad[0]][sad[2]] + sad[
-                        1]
+                    physical_server_cluster_final[sad[0]][sad[2]] = physical_server_cluster_final[sad[0]][sad[2]] + \
+                                                                    sad[1]
                 else:
                     physical_server_cluster_final[sad[0]][sad[2]] = sad[1]
         print count
@@ -1271,23 +1290,10 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
         flavor_prediction_numbers_new = flavor_prediction_numbers[:]
         for key in flavor_prediction_numbers_add:
             index = flavor_name.index(key)
-            flavor_prediction_numbers_new[index] = flavor_prediction_numbers_new[index] + flavor_prediction_numbers_add[
-                key]
-
-        # for pscl in physical_server_cluster_final:
+            flavor_prediction_numbers_new[index] = flavor_prediction_numbers_new[index] + \
+                                                   flavor_prediction_numbers_add[key]
         print flavor_prediction_numbers
         print flavor_prediction_numbers_new
         print physical_server_cluster_final
-
-        result = []
-        for pscf in physical_server_cluster_final:
-            physical_server = pscf.items()
-            cpu = 0
-            mem = 0
-            for ps in physical_server:
-                cpu = cpu + CPU_dict[ps[0]] * ps[1]
-                mem = mem + MEM_dict[ps[0]] * ps[1]
-            result.append([56 - cpu, 128 - mem])
-        print result
 
         return [physical_server_cluster_final, flavor_prediction_numbers_new]

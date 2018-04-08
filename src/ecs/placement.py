@@ -4,6 +4,7 @@ from writetxt import generate_output
 from placement_algorithm import *
 import random
 import math
+from test import Test
 
 
 def __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM):
@@ -75,6 +76,22 @@ def placement(input_lines, flavor_prediction_numbers):
     CPU_dict = dict(zip(flavor_name, flavor_CPU))
     MEM_dict = dict(zip(flavor_name, flavor_MEM))
 
+    # test = Test()
+    # physical_server_CPU_test = test.get_cpu()
+    # physical_server_MEM_test = test.get_mem()
+    # resource_name_test = test.get_resource()
+    # flavor_name_test = test.get_flavor_name()
+    # flavor_prediction_numbers_test = test.get_numbers()
+    # flavor_queue_test = []
+    # for i, fn in enumerate(flavor_prediction_numbers_test):
+    #     current_flavor_name = flavor_name_test[i]
+    #     flavor_queue_test = flavor_queue_test + [current_flavor_name] * fn
+    # random.shuffle(flavor_queue_test)
+    # physical_server_cluster_test = placement_algorithm_SA(flavor_queue_test, physical_server_CPU_test, physical_server_MEM_test,
+    #                                                       CPU_dict,
+    #                                                       MEM_dict, resource_name_test)
+    # __resource_used_watch(physical_server_cluster_test, CPU_dict, MEM_dict, physical_server_CPU_test, physical_server_MEM_test)
+
     # flavor_prediction_numbers = [45, 12, 53, 50, 30]  # 预测数量
 
     flavor_queue = []
@@ -83,9 +100,12 @@ def placement(input_lines, flavor_prediction_numbers):
         flavor_total = flavor_total + fn
         current_flavor_name = flavor_name[i]
         flavor_queue = flavor_queue + [current_flavor_name] * fn
+    random.shuffle(flavor_queue)
+
+
     # print flavor_name
     # print flavor_queue
-    random.shuffle(flavor_queue)
+
     # print flavor_queue
     # flavor_queue = ['flavor12', 'flavor11', 'flavor9', 'flavor9', 'flavor11', 'flavor9', 'flavor14',
     #                 'flavor14', 'flavor15', 'flavor14', 'flavor11', 'flavor9', 'flavor10', 'flavor13',
@@ -129,7 +149,7 @@ def placement(input_lines, flavor_prediction_numbers):
     #                     flavor_name, flavor_prediction_numbers)
 
     # __resource_used_watch(physical_server_cluster1, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
-    __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
+    # __resource_used_watch(physical_server_cluster, CPU_dict, MEM_dict, physical_server_CPU, physical_server_MEM)
     # print flavor_prediction_numbers
 
     return generate_output(flavor_name, flavor_prediction_numbers, physical_server_cluster)

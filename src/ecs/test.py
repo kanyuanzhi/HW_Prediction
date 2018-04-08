@@ -1,54 +1,34 @@
-from string_tools import str_to_date
-from datetime import timedelta
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import matplotlib.pylab as plb
+import os
 
-# fs_test = open("TrainData_1.txt")
-# train_lines = fs_test.readlines()
-# fs_test.close()
-#
-# all_date = []
-# for line in train_lines:
-#     date = line.split('\t')[2].split(' ')[0]
-#     all_date.append(str_to_date(date))
-#
-# date_count = []
-# count = 1
-#
-# date_line = []
-# last_date = all_date[0]
-# date_line.append(last_date)
-#
-# for i in range(1, len(all_date)):
-#     if all_date[i] == last_date:
-#         count = count + 1
-#     else:
-#         last_date = all_date[i]
-#         date_line.append(last_date)
-#         date_count.append(count)
-#         count = 1
-# date_count.append(count)
-#
-# print all_date[0]
-# print all_date[-1]
-#
-# print len(date_line)
-# print len(date_count)
-#
-# # plb.plot_date(plb.date2num(date_line), date_count, linestyle='-')
-# # plb.grid(True)
-# # plb.show()
-#
-# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
-# plt.gca().xaxis.set_major_locator(mdates.DayLocator())
-#
-# plt.plot(date_line, date_count)
-# plt.gcf().autofmt_xdate()
-# plt.show()
 
-a = [1, 2, 3, 4, 5]
-c = [1, 3, 4, 5, 6]
-d = list(map(lambda x: x[0] + x[1], zip(a, c)))
-b = [pow(i, 2) for i in a]
-print d
+class Test:
+    def __init__(self):
+        file_path = "test/case5.txt"
+        self.array = []
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as lines:
+                for line in lines:
+                    self.array.append(line)
+        else:
+            print 'file not exist: ' + file_path
+
+    def get_cpu(self):
+        return int(self.array[0].split(' ')[0])
+
+    def get_mem(self):
+        return int(self.array[0].split(' ')[1])
+
+    def get_resource(self):
+        return self.array[2][:3]
+
+    def get_flavor_name(self):
+        flavor_name = []
+        for item in self.array[6:]:
+            flavor_name.append(item.split(':')[0])
+        return flavor_name
+
+    def get_numbers(self):
+        numbers = []
+        for item in self.array[6:]:
+            numbers.append(int(item.split(':')[1]))
+        return numbers

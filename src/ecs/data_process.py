@@ -91,6 +91,7 @@ def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
         period_count_list.append(date_count_dict[current_date])
         current_date = current_date + timedelta(1)
 
+    # 对原始数据做高斯去燥
     g = Gauss(period_count_list, 4, 2.0)
     g.process()
 
@@ -136,6 +137,7 @@ def data_process(ecs_lines, input_lines):
     DELTA = itp.delta()  # 预测时间段的天数
     flavor_selected = itp.flavor_selected()  # input.txt中需要预测的flavor
     prediction_start_date = itp.prediction_start_date()
+    prediction_end_date = itp.prediction_end_date()
 
     tdtp = TrainDataTxtProcess(ecs_lines)
     start_date = tdtp.start_date()  # 训练集开始日期
@@ -143,13 +145,32 @@ def data_process(ecs_lines, input_lines):
     flavor_name = tdtp.flavor_name()
     flavor_name_datetime = tdtp.flavor_name_datetime(flavor_name)
     lost_date = tdtp.find_lost_date()
-
     period_data = []  # [[x_axis,y_axis],[x_axis,y_axis],[x_axis,y_axis]...]
-    for fs in flavor_selected:
-        item = __segmentation(fs, flavor_name, flavor_name_datetime, DELTA, prediction_start_date, start_date, end_date,
-                              lost_date)
-        item.append(fs)
-        period_data.append(item)
+    if prediction_start_date == end_date + timedelta(1):
+        period_data1 = []
+        for fs in flavor_selected:
+            item = __segmentation(fs, flavor_name, flavor_name_datetime, DELTA, prediction_start_date, start_date,
+                                  end_date, lost_date)
+            item.append(fs)
+            period_data1.append(item)
+        period_data = [period_data1]
+    else:
+        # 处理预测开始时间与训练结束时间不连续的情况
+        period_data1 = []
+        period_data2 = []
+        delta1 = (prediction_start_date - end_date).days - 1
+        delta2 = delta1 + DELTA
+        for fs in flavor_selected:
+            item1 = __segmentation(fs, flavor_name, flavor_name_datetime, delta1, prediction_start_date, start_date,
+                                   end_date, lost_date)
+            item1.append(fs)
+            period_data1.append(item1)
+
+            item2 = __segmentation(fs, flavor_name, flavor_name_datetime, delta2, prediction_start_date, start_date,
+                                   end_date, lost_date)
+            item2.append(fs)
+            period_data2.append(item2)
+        period_data = [period_data1, period_data2]
 
     return period_data
 

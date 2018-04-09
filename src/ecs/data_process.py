@@ -91,8 +91,8 @@ def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
         period_count_list.append(date_count_dict[current_date])
         current_date = current_date + timedelta(1)
 
-    # 对原始数据做高斯去燥
-    g = Gauss(period_count_list, 4, 2.0)
+    # 对原始数据做高斯去噪
+    g = Gauss(period_count_list, 7, 1.5)
     g.process()
 
     # print datetime_list

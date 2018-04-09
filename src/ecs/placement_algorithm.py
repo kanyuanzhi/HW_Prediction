@@ -1072,6 +1072,7 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
         for fi in flavor_information:
             if fi['cpu_mem'] == max_cpu_mem_all:
                 add_flavor.append(fi)
+        # add_flavor = flavor_information[:]
         add_flavor.sort(key=lambda x: x['cpu'], reverse=True)
 
         while SA_T > SA_T_min:
@@ -1223,10 +1224,11 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
         for i in range(len(flavor_queue)):
             dice.append(i)
 
-        add_flavor = []
-        for fi in flavor_information:
-            if fi['mem_cpu'] == max_mem_cpu_all:
-                add_flavor.append(fi)
+        # add_flavor = []
+        # for fi in flavor_information:
+        #     if fi['mem_cpu'] == max_mem_cpu_all:
+        #         add_flavor.append(fi)
+        add_flavor = flavor_information[:]
         add_flavor.sort(key=lambda x: x['mem'], reverse=True)
 
         while SA_T > SA_T_min:

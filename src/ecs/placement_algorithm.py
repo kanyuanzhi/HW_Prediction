@@ -1001,7 +1001,7 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
     :param flavor_prediction_numbers:
     :return:
     """
-    SA_T = 100
+    SA_T = 1000
     SA_T_min = 1
     r = 0.9999
     length = len(flavor_queue)
@@ -1078,18 +1078,18 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
         while SA_T > SA_T_min:
             flavor_queue_new = flavor_queue[:]
             random.shuffle(dice)
-            # flavor1 = flavor_queue_new[dice[0]]
-            # flavor2 = flavor_queue_new[dice[1]]
-            # flavor_queue_new[dice[0]] = flavor2
-            # flavor_queue_new[dice[1]] = flavor1
-            left = min(dice[0], dice[1])
-            right = max(dice[0], dice[1])
-            flavor_queue_left = flavor_queue[:left]
-            flavor_queue_middle = flavor_queue[left:right]
-            flavor_queue_right = flavor_queue[right:]
+            flavor1 = flavor_queue_new[dice[0]]
+            flavor2 = flavor_queue_new[dice[1]]
+            flavor_queue_new[dice[0]] = flavor2
+            flavor_queue_new[dice[1]] = flavor1
+            # left = min(dice[0], dice[1])
+            # right = max(dice[0], dice[1])
+            # flavor_queue_left = flavor_queue[:left]
+            # flavor_queue_middle = flavor_queue[left:right]
+            # flavor_queue_right = flavor_queue[right:]
             # flavor_queue_middle.reverse()
-            random.shuffle(flavor_queue_middle)
-            flavor_queue_new = flavor_queue_left + flavor_queue_middle + flavor_queue_right
+            # # random.shuffle(flavor_queue_middle)
+            # flavor_queue_new = flavor_queue_left + flavor_queue_middle + flavor_queue_right
 
             physical_server = {}
             physical_server_cluster = [physical_server]
@@ -1234,18 +1234,18 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
         while SA_T > SA_T_min:
             flavor_queue_new = flavor_queue[:]
             random.shuffle(dice)
-            # flavor1 = flavor_queue_new[dice[0]]
-            # flavor2 = flavor_queue_new[dice[1]]
-            # flavor_queue_new[dice[0]] = flavor2
-            # flavor_queue_new[dice[1]] = flavor1
-            left = min(dice[0], dice[1])
-            right = max(dice[0], dice[1])
-            flavor_queue_left = flavor_queue[:left]
-            flavor_queue_middle = flavor_queue[left:right]
-            flavor_queue_right = flavor_queue[right:]
+            flavor1 = flavor_queue_new[dice[0]]
+            flavor2 = flavor_queue_new[dice[1]]
+            flavor_queue_new[dice[0]] = flavor2
+            flavor_queue_new[dice[1]] = flavor1
+            # left = min(dice[0], dice[1])
+            # right = max(dice[0], dice[1])
+            # flavor_queue_left = flavor_queue[:left]
+            # flavor_queue_middle = flavor_queue[left:right]
+            # flavor_queue_right = flavor_queue[right:]
             # flavor_queue_middle.reverse()
-            random.shuffle(flavor_queue_middle)
-            flavor_queue_new = flavor_queue_left + flavor_queue_middle + flavor_queue_right
+            # # random.shuffle(flavor_queue_middle)
+            # flavor_queue_new = flavor_queue_left + flavor_queue_middle + flavor_queue_right
 
             physical_server = {}
             physical_server_cluster = [physical_server]

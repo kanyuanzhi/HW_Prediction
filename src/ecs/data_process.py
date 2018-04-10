@@ -92,7 +92,7 @@ def __segmentation(flavor, fn, fnd, d, psd, sd, ed, ld):
         current_date = current_date + timedelta(1)
 
     # 对原始数据做高斯去噪
-    g = Gauss(period_count_list, 7, 1.5)
+    g = Gauss(period_count_list, 7, 1.4)
     g.process()
 
     # print datetime_list

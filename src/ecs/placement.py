@@ -2,6 +2,7 @@
 from readtxt import InputTxtProcess
 from writetxt import generate_output
 from placement_algorithm import *
+from dynamic_planning import placement_algorithm_DP
 import random
 import math
 from test import Test
@@ -102,7 +103,7 @@ def placement(input_lines, flavor_prediction_numbers):
         flavor_queue = flavor_queue + [current_flavor_name] * fn
     random.shuffle(flavor_queue)
 
-
+    # placement_algorithm_DP(flavor_queue, physical_server_CPU, physical_server_MEM, CPU_dict, MEM_dict, resource_name)
     # print flavor_name
     # print flavor_queue
 

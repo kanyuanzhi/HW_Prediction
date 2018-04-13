@@ -16,13 +16,23 @@ def package01(w, v, bagsize):
             else:
                 matrix[i][j] = max(matrix[i - 1][j], matrix[i - 1][j - w[i]] + v[i])
 
-    for i in range(len(matrix)):
-        for j in range(len(matrix[0])):
-            pass
+    no_used = []
+    used = []
+    bs = bagsize
+    i = len(w)-1
+    while i>0:
+        if matrix[i][bs] == matrix[i - 1][bs]:
+            no_used.append(i)
+        if matrix[i][bs] == matrix[i - 1][bs - w[i]] + v[i]:
+            used.append(i)
+            bs = bs - w[i]
+        i = i-1
+    print bs
+
+    print "used:", used
+    print "no_used:", no_used
 
     return matrix
-
-
 
 
 def get_answer(bag_items, bag_size):
@@ -74,8 +84,8 @@ if __name__ == "__main__":
     name = ['a', 'b', 'c', 'd', 'e']
     # weight = [2, 2, 6, 5, 4]
     # value = [6, 3, 5, 4, 6]
-    weight = [2, 3, 4, 5]
-    value = [3, 4, 5, 6]
+    weight = [3, 2, 4, 5]
+    value = [4, 3, 5, 6]
     bag_items = []
     array = package01(weight, value, 8)
     # for i in range(len(name)):

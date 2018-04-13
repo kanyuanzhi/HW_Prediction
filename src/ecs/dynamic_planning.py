@@ -1,7 +1,16 @@
 # coding=utf-8
+import math
 
 
-def package01(w, v, bagsize):
+def package01(w, v, n, bagsize):
+    """
+    01背包
+    :param w:
+    :param v:
+    :param n:
+    :param bagsize:
+    :return:
+    """
     matrix = [[0 for i in range(bagsize + 1)] for j in range(len(w))]
     for i in range(len(matrix[0])):
         if i < w[0]:
@@ -19,59 +28,74 @@ def package01(w, v, bagsize):
     no_used = []
     used = []
     bs = bagsize
-    i = len(w)-1
-    while i>0:
-        if matrix[i][bs] == matrix[i - 1][bs]:
-            no_used.append(i)
+    i = len(w) - 1
+    while i > 0:
+        # if matrix[i][bs] == matrix[i - 1][bs]:
+        #     no_used.append(n[i])
         if matrix[i][bs] == matrix[i - 1][bs - w[i]] + v[i]:
-            used.append(i)
+            used.append(n[i])
             bs = bs - w[i]
-        i = i-1
-    print bs
+        i = i - 1
+    if bs != 0:
+        used.append(n[i])
+    # else:
+    #     no_used.append(n[i])
 
     print "used:", used
-    print "no_used:", no_used
+    # print "no_used:", no_used
 
     return matrix
 
 
-def get_answer(bag_items, bag_size):
-    bag_matrix = [[0 for i in range(bag_size)] for j in range(len(bag_items))]
+def package_complete(w, v, n, bagsize):
+    """
+    完全背包
+    :param w:
+    :param v:
+    :param n:
+    :param bagsize:
+    :return:
+    """
+    counts = []
+    new_counts = []
+    for item in w:
+        counts.append(bagsize / item)
+        new_counts.append(math.log(bagsize / item, 2))
+    print "counts:", counts
+    print "new_counts:", new_counts
+    w_new = []
+    v_new = []
+    n_new = []
+    for i in range(len(w)):
+        w_new = w_new + [w[i]] * counts[i]
+        v_new = v_new + [v[i]] * counts[i]
+        n_new = n_new + [n[i]] * counts[i]
 
-    for i in range(bag_size):
-        for j in range(len(bag_items)):
-            item = bag_items[j]
-            if item.weight > i:
-                if j == 0:
-                    bag_matrix[j][i] = 0
-                else:
-                    bag_matrix[j][i] = bag_matrix[j - 1][i]
-            else:
-                if j == 0:
-                    bag_matrix[j][i] = item.value
-                    continue
-                else:
-                    item_in_bag = bag_matrix[j - 1][i - item.weight] + item.value
-                if bag_matrix[j - 1][i] > item_in_bag:
-                    bag_matrix[j][i] = bag_matrix[j - 1][i]
-                else:
-                    bag_matrix[j][i] = item_in_bag
+    return package01(w_new, v_new, n_new, bagsize)
 
-    answers = []
-    cur_size = bag_size
-    for i in range(len(bag_items[::-1])):
-        item = bag_items[i]
-        if cur_size == 0:
-            break
-        if i == 0 and cur_size > 0:
-            answers.append(item.name)
-            break
-        if bag_matrix[i][cur_size] - bag_matrix[i - 1][cur_size - item.weight] == item.value:
-            answers.append(item.name)
-            cur_size = cur_size - item.weight
 
-    return answers
+def package_multiple(w, v, n, c, bagsize):
+    """
+    多重背包
+    :param w:
+    :param v:
+    :param n:
+    :param c:
+    :param bagsize:
+    :return:
+    """
+    w_new = []
+    v_new = []
+    n_new = []
+    for i in range(len(w)):
+        w_new = w_new + [w[i]] * c[i]
+        v_new = v_new + [v[i]] * c[i]
+        n_new = n_new + [n[i]] * c[i]
 
+    return package01(w_new, v_new, n_new, bagsize)
+
+def two_package01(w1,w2,v,n,bagsize):
+    pass
 
 class PackageItem:
     def __init__(self, name, weight, value):
@@ -82,14 +106,14 @@ class PackageItem:
 
 if __name__ == "__main__":
     name = ['a', 'b', 'c', 'd', 'e']
-    # weight = [2, 2, 6, 5, 4]
-    # value = [6, 3, 5, 4, 6]
-    weight = [3, 2, 4, 5]
-    value = [4, 3, 5, 6]
+    weight = [2, 2, 6, 5, 4]
+    value = [6, 3, 5, 4, 6]
+    # weight = [4, 2, 3, 5, 5, 7, 6]
+    # value = [5, 3, 4, 6, 6, 4, 3]
     bag_items = []
-    array = package01(weight, value, 8)
-    # for i in range(len(name)):
-    #     bag_items.append(PackageItem(name[i], weight[i], value[i]))
-    # array = get_answer(bag_items, 10)
-    for a in array:
+    # array = package01(weight, value, name, 10)
+    # for a in array:
+    #     print a
+    array2 = package_complete(weight, value, name, 10)
+    for a in array2:
         print a

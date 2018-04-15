@@ -3,7 +3,7 @@ import os
 
 class Test:
     def __init__(self):
-        file_path = "test/case5.txt"
+        file_path = "test/case6.txt"
         self.array = []
         if os.path.exists(file_path):
             with open(file_path, 'r') as lines:

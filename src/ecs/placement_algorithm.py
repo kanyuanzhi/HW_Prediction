@@ -270,10 +270,19 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
     :param flavor_prediction_numbers:
     :return:
     """
-    SA_T = 100
-    SA_T_min = 1
-    r = 0.999
     length = len(flavor_queue)
+    if length < 500:
+        SA_T = 1000
+        SA_T_min = 100
+        r = 0.9999
+    elif length < 1000:
+        SA_T = 1000
+        SA_T_min = 500
+        r = 0.9999
+    else:
+        SA_T = 1000
+        SA_T_min = 100
+        r = 0.999
     mark_min = length
     physical_server_cluster_final = []
     physical_server_cluster_final2 = []
@@ -312,7 +321,6 @@ def placement_algorithm_SA(flavor_queue, physical_server_CPU, physical_server_ME
         # flavor_queue_middle.reverse()
         random.shuffle(flavor_queue_middle)
         flavor_queue_new = flavor_queue_left + flavor_queue_middle + flavor_queue_right
-
 
         physical_server = {}
         physical_server_cluster = [physical_server]
@@ -1001,10 +1009,23 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
     :param flavor_prediction_numbers:
     :return:
     """
+    length = len(flavor_queue)
     SA_T = 1000
     SA_T_min = 1
     r = 0.9999
-    length = len(flavor_queue)
+    # if length < 500:
+    #     SA_T = 1000
+    #     SA_T_min = 100
+    #     r = 0.9999
+    # elif length < 1000:
+    #     SA_T = 1000
+    #     SA_T_min = 500
+    #     r = 0.9999
+    # else:
+    #     SA_T = 1000
+    #     SA_T_min = 100
+    #     r = 0.999
+
     mark_min = length
     physical_server_cluster_final = []
 
@@ -1043,26 +1064,6 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
     # resource_index = {"CPU": 0, "MEM": 1}[resource]
     # resource_index_opposite = {"CPU": 1, "MEM": 0}[resource]
     if resource == "CPU":
-        # for fi in flavor_information:
-        #     """
-        #     我也不知道为啥这样调整后分数上去了！
-        #     """
-        #     if abs(fi['mem_cpu'] - 1.0) < 0.00001:
-        #         fi['numbers'] = int(fi['numbers'] * 0.9)
-        #     if abs(fi['mem_cpu'] - 2.0) < 0.00001:
-        #         fi['numbers'] = int(fi['numbers'] * 1.1)
-        #     if abs(fi['mem_cpu'] - 4.0) < 0.00001:
-        #         fi['numbers'] = int(fi['numbers'] * 1.1)
-        #
-        # for fi in flavor_information:
-        #     index = flavor_name.index(fi['name'])
-        #     flavor_prediction_numbers[index] = fi['numbers']
-        #
-        # flavor_queue = []
-        # for i, fn in enumerate(flavor_prediction_numbers):
-        #     current_flavor_name = flavor_name[i]
-        #     flavor_queue = flavor_queue + [current_flavor_name] * fn
-        # random.shuffle(flavor_queue)
 
         dice = []
         for i in range(len(flavor_queue)):
@@ -1074,7 +1075,7 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
                 add_flavor.append(fi)
         # add_flavor = flavor_information[:]
         add_flavor.sort(key=lambda x: x['cpu'], reverse=True)
-
+        time_start = time.clock()
         while SA_T > SA_T_min:
             flavor_queue_new = flavor_queue[:]
             random.shuffle(dice)
@@ -1144,9 +1145,13 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
                 if random.random() > p:
                     mark_min = mark
                     flavor_queue = flavor_queue_new
-            print mark_min
-            print round(SA_T, 1)
+            # print mark_min
+            # print round(SA_T, 1)
             SA_T = SA_T * r
+            time_end = time.clock()
+            time_delta = time_end - time_start
+            if time_delta > 45:
+                break
         # print physical_server_cluster_resource_left
         print physical_server_cluster_resource_left_final
         special_add_counts = []
@@ -1230,7 +1235,7 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
         #         add_flavor.append(fi)
         add_flavor = flavor_information[:]
         add_flavor.sort(key=lambda x: x['mem'], reverse=True)
-
+        time_start = time.clock()
         while SA_T > SA_T_min:
             flavor_queue_new = flavor_queue[:]
             random.shuffle(dice)
@@ -1302,9 +1307,13 @@ def placement_algorithm_SA_super_enhancement_plus(flavor_queue, physical_server_
                 if random.random() > p:
                     mark_min = mark
                     flavor_queue = flavor_queue_new
-            print mark_min
-            print round(SA_T, 1)
+            # print mark_min
+            # print round(SA_T, 1)
             SA_T = SA_T * r
+            time_end = time.clock()
+            time_delta = time_end - time_start
+            if time_delta > 45:
+                break
         print physical_server_cluster_resource_left_final
         special_add_counts = []
         for af in add_flavor:

@@ -7,6 +7,7 @@ class InputTxtProcess:
     """
     处理input.txt文件
     """
+
     def __init__(self, input_lines):
         self.__input_lines = input_lines
 
@@ -18,12 +19,20 @@ class InputTxtProcess:
         return flavor_selected
 
     def prediction_start_date(self):
-        prediction_start = self.__input_lines[-2:-1][0].split(' ')[0]
+        for i in range(len(self.__input_lines)):
+            if self.__input_lines[i][:3] == "CPU" or self.__input_lines[i][:3] == "MEM":
+                start_line_index = i + 2
+                break
+        prediction_start = self.__input_lines[start_line_index].split(' ')[0]
         prediction_start_date = str_to_date(prediction_start)
         return prediction_start_date
 
     def prediction_end_date(self):
-        prediction_end = self.__input_lines[-1:][0].split(' ')[0]
+        for i in range(len(self.__input_lines)):
+            if self.__input_lines[i][:3] == "CPU" or self.__input_lines[i][:3] == "MEM":
+                end_line_index = i + 3
+                break
+        prediction_end = self.__input_lines[end_line_index].split(' ')[0]
         prediction_end_date = str_to_date(prediction_end)
         return prediction_end_date
 
@@ -56,13 +65,16 @@ class InputTxtProcess:
         需要优化的资源名称CPU或MEM
         :return:
         """
-        return self.__input_lines[-4:-3][0][0:3]
+        for line in self.__input_lines:
+            if line[:3] == "CPU" or line[:3] == "MEM":
+                return line[:3]
 
 
 class TrainDataTxtProcess:
     """
     处理TrainData.txt文件
     """
+
     def __init__(self, ecs_lines):
         self.__data_matrix = []
         for d in ecs_lines:
